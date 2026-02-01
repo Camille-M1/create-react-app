@@ -85,7 +85,7 @@ export default function ManageTodo() {
   }
 
   return (
-    <div className="todo-page">
+    <div className="todo-page manage-page">
       <h2>Manage To‑Do</h2>
 
       <form className="task-form" onSubmit={editingId ? saveEdit : onAdd}>

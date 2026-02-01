@@ -151,7 +151,7 @@ export default function Todo() {
                 {task.notes && <div className="task-notes-text">{task.notes}</div>}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div className="task-actions">
               {task.dueDate && (
                 <a
                   className="btn-link"

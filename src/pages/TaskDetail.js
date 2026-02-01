@@ -88,7 +88,7 @@ export default function TaskDetail() {
   }
 
   return (
-    <div className="todo-page">
+    <div className="todo-page task-detail">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>{task.title}</h2>
         <div style={{ display: 'flex', gap: 8 }}>
