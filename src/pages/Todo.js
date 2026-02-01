@@ -133,7 +133,7 @@ export default function Todo() {
           <input type="checkbox" checked={showCompleted} onChange={e => setShowCompleted(e.target.checked)} /> Show completed
         </label>
 
-        <button className="btn-secondary" onClick={exportICS}>Export .ics</button>
+        <button className="btn-secondary" onClick={exportICS}>Export</button>
 
         <div style={{ marginLeft: 'auto' }}>
           <Link to="/todos/manage" className="btn-primary">Manage tasks</Link>
