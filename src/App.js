@@ -1,59 +1,39 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import AddTask from './AddTask';
-import TaskList from './TaskList';
-import StatusBoard from './StatusBoard.js';
-import './StatusBoard.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import Todo from './pages/Todo';
+import ManageTodo from './pages/ManageTodo';
+import TaskDetail from './pages/TaskDetail';
 
-function App() {
-  const [tasks, setTasks] = useState([]);
-
-  const addTask = (taskText, taskStatus) => {
-    const newTask = {
-      id: Date.now(),
-      text: taskText,        // <-- must be 'text', not something else
-      status: taskStatus
-    };
-    setTasks([...tasks, newTask]);
-  };
-  
-
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-  };
-  const updateTaskStatus = (taskId, newStatus) => {
-    setTasks(
-      tasks.map(task =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
-    );
-  };
+function Home() {
   return (
-    <div className="App">
+    <div className="home">
       <header className="App-header">
-        {/* Default CRA content */}
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-
-        {/* Task Manager section */}
-        <h2>Task Manager</h2>
-        <AddTask onAddTask={addTask} />
-        <TaskList tasks={tasks} onDeleteTask={deleteTask} />
-        <StatusBoard tasks={tasks} onStatusChange={updateTaskStatus} />
-
+        <h1 className="site-title">Welcome to TaskPilot</h1>
+        <p className="tagline">Manage tasks smarter. Start organizing your day.</p>
       </header>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <nav className="site-nav">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/todos" className="nav-link">To‑Do</Link>
+        </nav>
+        <main className="site-main">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/todos" element={<Todo />} />
+            <Route path="/todos/manage" element={<ManageTodo />} />
+            <Route path="/todos/:id" element={<TaskDetail />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
