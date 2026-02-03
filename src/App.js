@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import Todo from './pages/Todo';
 import ManageTodo from './pages/ManageTodo';
 import TaskDetail from './pages/TaskDetail';
+import TasksPage from './pages/TasksPage'; 
 
 function Home() {
   return (
@@ -17,19 +18,56 @@ function Home() {
 }
 
 function App() {
+  const [tasks, setTasks] = useState([]);
+
+  const addTask = (taskText, taskStatus) => {
+    const newTask = {
+      id: Date.now(),
+      text: taskText,
+      status: taskStatus || 'todo',
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const updateTaskStatus = (taskId, newStatus) => {
+    setTasks(
+      tasks.map(task =>
+        task.id === taskId ? { ...task, status: newStatus } : task
+      )
+    );
+  };
+
+  const deleteTask = (taskId) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
+
   return (
     <BrowserRouter>
       <div className="App">
+        {/* Navigation bar */}
         <nav className="site-nav">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/todos" className="nav-link">To‑Do</Link>
+          <Link to="/tasks" className="nav-link">Tasks</Link> {/* always says "Tasks" */}
         </nav>
+
         <main className="site-main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/todos" element={<Todo />} />
+            <Route path="/todos" element={<Todo tasks={tasks} />} />
             <Route path="/todos/manage" element={<ManageTodo />} />
             <Route path="/todos/:id" element={<TaskDetail />} />
+            <Route
+              path="/tasks"
+              element={
+                <TasksPage
+                  tasks={tasks}
+                  onAddTask={addTask}
+                  onStatusChange={updateTaskStatus}
+                  onDeleteTask={deleteTask}
+                />
+              }
+            />
           </Routes>
         </main>
       </div>
