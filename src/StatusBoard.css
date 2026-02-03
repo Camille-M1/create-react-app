@@ -1,0 +1,36 @@
+.board {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .column {
+    flex: 1;
+    background: #f0f0f0; /* light gray background instead of white */
+    padding: 10px;
+    border-radius: 8px;
+    min-height: 200px; /* makes columns more visible */
+  }
+  
+  .column h3 {
+    text-align: center;
+    font-weight: bold;
+    color: #333; /* dark text for readability */
+    margin-bottom: 10px;
+  }
+  
+  .task-card {
+    background: white;
+    color: #333;   /* text color visible */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+  }
+  
+
+  
+  select {
+    width: 100%;
+    margin-top: 5px;
+  }
+  
