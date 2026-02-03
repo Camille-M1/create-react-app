@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+<<<<<<< HEAD
 import "./App.css";
+=======
+
+import "./App.css";
+import Calendar from "./components/Calendar/Calendar";
+
+import Todo from "./pages/Todo";
+import ManageTodo from "./pages/ManageTodo";
+import TaskDetail from "./pages/TaskDetail";
+import TasksPage from "./pages/TasksPage";
+>>>>>>> 88432924e8924b01f9995ca96fd82aa2ca58a648
 
 // Pages / Components
 import Calendar from "./components/Calendar/Calendar";
@@ -13,6 +24,8 @@ import TasksPage from "./pages/TasksPage";
 function Home() {
   return (
     <div className="home">
+      <Calendar />
+
       <header className="App-header">
         <h1 className="site-title">Welcome to TaskPilot</h1>
         <p className="tagline">
@@ -51,10 +64,16 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
+<<<<<<< HEAD
         {/* NAVIGATION */}
         <nav className="site-nav">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/calendar" className="nav-link">Calendar</Link>
+=======
+        {/* Navigation */}
+        <nav className="site-nav">
+          <Link to="/" className="nav-link">Home</Link>
+>>>>>>> 88432924e8924b01f9995ca96fd82aa2ca58a648
           <Link to="/todos" className="nav-link">To-Do</Link>
           <Link to="/tasks" className="nav-link">Tasks</Link>
         </nav>
