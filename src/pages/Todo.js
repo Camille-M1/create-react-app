@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import AddTask from '../AddTask';
-import TaskList from '../TaskList';
-import StatusBoard from '../StatusBoard';
 import '../App.css';
 
 function dateVal(d) {
