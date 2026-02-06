@@ -140,4 +140,31 @@ button, input[type="button"], input[type="submit"] { border-radius:10px; }
 .todo-page .task-title { color: rgba(11,43,22,0.98); }
 .todo-page .task-due, .todo-page .task-notes-text { color: rgba(11,43,22,0.95); }
 
+/* Tasks panel dropdown */
+.tasks-panel {
+  max-width: 720px;
+  margin: 12px auto;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Make Tasks button match nav links */
+.site-nav .btn-primary {
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav .btn-primary:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+
 
