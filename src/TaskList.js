@@ -1,16 +1,8 @@
 import React from 'react';
 
 const TaskList = ({ tasks, onDeleteTask }) => {
-  return (
-    <ul>
-      {tasks.map((task) => (
-        <li key={task.id}>
-          {task.text}
-          <button onClick={() => onDeleteTask(task.id)}>Delete</button>
-        </li>
-      ))}
-    </ul>
-  );
+  // Only show the list if needed elsewhere, but remove delete and link
+  return null;
 };
 
 export default TaskList;

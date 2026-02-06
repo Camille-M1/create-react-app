@@ -7,6 +7,7 @@ import "./App.css";
 import Calendar from "./components/Calendar/Calendar";
 import Todo from "./pages/Todo";
 import ManageTodo from "./pages/ManageTodo";
+import NewTask from "./pages/NewTask";
 import TaskDetail from "./pages/TaskDetail";
 import TasksPage from "./pages/TasksPage";
 
@@ -37,23 +38,58 @@ function Home() {
 
 // ---------- MAIN APP ----------
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    // Load tasks from localStorage on initial mount
+    const raw = localStorage.getItem('tasks');
+    return raw ? JSON.parse(raw) : [];
+  });
+
+  // Sync tasks to localStorage whenever they change
+  React.useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  // Listen for storage changes from other tabs/windows or NewTask/ManageTodo
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      const raw = localStorage.getItem('tasks');
+      if (raw) setTasks(JSON.parse(raw));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const addTask = (taskText, taskStatus) => {
-    setTasks([
-      ...tasks,
-      {
-        id: Date.now(),
-        text: taskText,
-        status: taskStatus || "todo",
-      },
-    ]);
+    const newTask = {
+      id: Date.now(),
+      title: taskText,
+      text: taskText,
+      status: taskStatus || "todo",
+      notes: '',
+      dueDate: null,
+      completed: false,
+      notifyOnComment: false,
+      comments: [],
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const addTaskFromForm = (taskObj) => {
+    setTasks([...tasks, taskObj]);
   };
 
   const updateTaskStatus = (taskId, newStatus) => {
     setTasks(
       tasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
+        task.id === taskId
+          ? {
+              ...task,
+              status: newStatus,
+              completed: newStatus === 'done',
+              // Only archive if explicitly requested elsewhere
+            }
+          : task
       )
     );
   };
@@ -77,16 +113,16 @@ function App() {
         <main className="site-main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/todos" element={<Todo tasks={tasks} />} />
-            <Route path="/todos/manage" element={<ManageTodo />} />
+            <Route path="/calendar" element={<Calendar tasks={tasks} />} />
+            <Route path="/todos" element={<Todo tasks={tasks.filter(t => !t.archived)} allTasks={tasks} />} />
+            <Route path="/todos/manage" element={<ManageTodo tasks={tasks} onTasksChange={setTasks} />} />
             <Route path="/todos/:id" element={<TaskDetail />} />
+            <Route path="/tasks/new" element={<NewTask onTaskCreated={addTaskFromForm} />} />
             <Route
               path="/tasks"
               element={
                 <TasksPage
-                  tasks={tasks}
-                  onAddTask={addTask}
+                  tasks={tasks.filter(t => !t.archived)}
                   onStatusChange={updateTaskStatus}
                   onDeleteTask={deleteTask}
                 />

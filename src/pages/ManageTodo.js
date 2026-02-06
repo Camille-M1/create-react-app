@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
 
-export default function ManageTodo() {
-  const [tasks, setTasks] = useState([]);
+export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) {
+  const [tasks, setTasks] = useState(initialTasks);
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
 
+  // Update local state when props change
   useEffect(() => {
-    const raw = localStorage.getItem('tasks');
-    if (raw) setTasks(JSON.parse(raw));
-  }, []);
+    // Only show non-archived tasks
+    setTasks(initialTasks.filter(t => !t.archived));
+  }, [initialTasks]);
 
+  // Keep localStorage and parent component in sync
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    if (onTasksChange) {
+      // Update parent with only non-archived tasks
+      onTasksChange(tasks);
+    }
+  }, [tasks, onTasksChange]);
 
   function dateVal(d) {
     return d && !isNaN(new Date(d)) ? new Date(d).getTime() : Infinity;
@@ -36,21 +42,7 @@ export default function ManageTodo() {
     setNotify(false);
   }
 
-  function onAdd(e) {
-    e.preventDefault();
-    if (!title.trim()) return;
-    const newTask = {
-      id: Date.now().toString(),
-      title: title.trim(),
-      dueDate: dueDate || null,
-      notes: notes.trim(),
-      completed: false,
-      notifyOnComment: !!notify,
-      comments: [],
-    };
-    setTasks(prev => sortTasks([...prev, newTask]));
-    clearForm();
-  }
+  // Removed add function
 
   function startEdit(task) {
     setEditingId(task.id);
@@ -76,7 +68,10 @@ export default function ManageTodo() {
 
   function onDelete(id) {
     if (window.confirm('Delete this task?')) {
-      setTasks(prev => prev.filter(t => t.id !== id));
+      const next = tasks.filter(t => t.id !== id);
+      setTasks(next);
+      localStorage.setItem('tasks', JSON.stringify(next));
+      if (onTasksChange) onTasksChange(next);
     }
   }
 
@@ -88,43 +83,39 @@ export default function ManageTodo() {
     <div className="todo-page manage-page">
       <h2>Manage To‑Do</h2>
 
-      <form className="task-form" onSubmit={editingId ? saveEdit : onAdd}>
-        <input
-          className="task-input"
-          placeholder="Task title"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          required
-        />
-        <input
-          type="date"
-          className="task-date"
-          value={dueDate}
-          onChange={e => setDueDate(e.target.value)}
-        />
-        <textarea
-          className="task-notes"
-          placeholder="Notes (optional)"
-          value={notes}
-          onChange={e => setNotes(e.target.value)}
-        />
-
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <input type="checkbox" checked={notify} onChange={e => setNotify(e.target.checked)} /> Notify
-        </label>
-
-        <div className="task-form-actions">
-          <button type="submit" className="btn-primary">{editingId ? 'Save' : 'Add'}</button>
-          {editingId ? (
+      {editingId && (
+        <form className="task-form" onSubmit={saveEdit}>
+          <input
+            className="task-input"
+            placeholder="Task title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+          />
+          <input
+            type="date"
+            className="task-date"
+            value={dueDate}
+            onChange={e => setDueDate(e.target.value)}
+          />
+          <textarea
+            className="task-notes"
+            placeholder="Notes (optional)"
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+          />
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <input type="checkbox" checked={notify} onChange={e => setNotify(e.target.checked)} /> Notify
+          </label>
+          <div className="task-form-actions">
+            <button type="submit" className="btn-primary">Save</button>
             <button type="button" className="btn-secondary" onClick={cancelEdit}>Cancel</button>
-          ) : (
-            <button type="button" className="btn-secondary" onClick={clearForm}>Clear</button>
-          )}
-        </div>
-      </form>
+          </div>
+        </form>
+      )}
 
       <div className="task-list">
-        {tasks.length === 0 && <p className="empty">No tasks — add one above.</p>}
+        {tasks.length === 0 && <p className="empty">No tasks to manage.</p>}
         {tasks.map(task => (
           <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
             <div className="task-main">
@@ -142,10 +133,9 @@ export default function ManageTodo() {
           </div>
         ))}
       </div>
-
-      <div className="footer-actions" style={{ marginTop: 12 }}>
-        <button className="btn-secondary" onClick={clearCompleted}>Clear completed</button>
-      </div>
+    <div className="footer-actions" style={{ marginTop: 12 }}>
+      <button className="btn-secondary" onClick={clearCompleted}>Clear completed</button>
     </div>
+  </div>
   );
 }
