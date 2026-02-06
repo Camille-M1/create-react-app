@@ -1,30 +1,3 @@
-import './App.css';
-import logo from './logo.png'
-function App() {
-  return (
-    <div className="App">
-      
-      <nav className="navbar">
-        <div className="logo">Task<span>Pilot</span></div>
-        <div className="logo-container">
-          <img src={logo} alt="TaskPilot Logo" className="nav-logo" />
-         
-        </div>
-        <div className="nav-links">
-          <button className="btn-login">LOG IN</button>
-        </div>
-      </nav>
-
-      
-      <header className="App-header">
-        <div className="hero-content">
-          <h1>Your ultimate task management <span>solution.</span></h1>
-          <p>Streamline your workflow, crush your goals, and navigate your day with TaskPilot.</p>
-          <div className="button-group">
-  <button className="btn-primary">GET STARTED</button>
-  <button className="btn-login-main">LOG IN</button>
-</div>
-        </div>
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
@@ -62,7 +35,6 @@ function Home() {
   );
 }
 
-export default App;
 // ---------- MAIN APP ----------
 function App() {
   const [tasks, setTasks] = useState([]);
