@@ -20,6 +20,17 @@ function Home() {
           Manage tasks smarter. Start organizing your day.
         </p>
       </header>
+
+      <section className="features">
+        <div className="feature-card">
+          <h3>Smart Sorting</h3>
+          <p>The Smart Task & Team Management System is a web-based application designed to help teams organize tasks, manage deadlines, assign roles, and track progress. </p>
+        </div>
+        <div className="feature-card">
+          <h3>Cloud Sync</h3>
+          <p>Access your tasks from your MacBook or on the go.</p>
+        </div>
+      </section>
     </div>
   );
 }
