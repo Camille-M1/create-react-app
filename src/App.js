@@ -7,17 +7,15 @@ function App() {
       <nav className="navbar">
         <div className="logo">Task<span>Pilot</span></div>
         <div className="logo-container">
-          <img src={logo} alt="TaskPilot Logo" className="nav-logo" />
          
         </div>
-        <div className="nav-links">
-          <button className="btn-login">LOG IN</button>
-        </div>
+     
       </nav>
 
       
       <header className="App-header">
         <div className="hero-content">
+        <img src={logo} alt="TaskPilot Logo" className="nav-logo" />
           <h1>Your ultimate task management <span>solution.</span></h1>
           <p>Streamline your workflow, crush your goals, and navigate your day with TaskPilot.</p>
           <div className="button-group">
