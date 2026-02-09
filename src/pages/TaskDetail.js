@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, Link, /*useNavigate, useLocation*/ } from 'react-router-dom';
 import '../App.css';
 //comment out import that are not used for vercel
 
 export default function TaskDetail() {
   const { id } = useParams();
   //const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
   //const fromTasks = new URLSearchParams(location.search).get('from') === 'tasks';
   const [task, setTask] = useState(null);
   const [tasks, setTasks] = useState([]);
