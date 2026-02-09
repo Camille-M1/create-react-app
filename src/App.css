@@ -123,6 +123,7 @@ h1 {
 
 h1 span {
   background: linear-gradient(90deg, #91b38e, #d3ecdc);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
