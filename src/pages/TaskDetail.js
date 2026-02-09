@@ -5,9 +5,9 @@ import '../App.css';
 
 export default function TaskDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
-  const fromTasks = new URLSearchParams(location.search).get('from') === 'tasks';
+  //const fromTasks = new URLSearchParams(location.search).get('from') === 'tasks';
   const [task, setTask] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [author, setAuthor] = useState('');
