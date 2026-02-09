@@ -60,7 +60,7 @@ function App() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const addTask = (taskText, taskStatus) => {
+  /*const addTask = (taskText, taskStatus) => {
     const newTask = {
       id: Date.now(),
       title: taskText,
@@ -73,7 +73,7 @@ function App() {
       comments: [],
     };
     setTasks([...tasks, newTask]);
-  };
+  };*/
 
   const addTaskFromForm = (taskObj) => {
     setTasks([...tasks, taskObj]);
