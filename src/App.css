@@ -81,8 +81,49 @@ body, .App {
   width: auto;
 }
 
+.logo-text {
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.nav-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  margin-right: 20px;
+:root {
+  /* Palette: mint green 3 */
+  --p-b9: #b9d5bc; /* soft green */
+  --p-c5: #c5dcc2; /* light green */
+  --p-91: #91b38e; /* accent green */
+  --p-5a: #5a855f; /* dark accent */
+  --p-d3: #d3ecdc; /* background */
+
+  --bg: var(--p-d3);
+  --surface: var(--p-c5);
+  --muted: var(--p-b9);
+  --accent: var(--p-91);
+  --accent-dark: var(--p-5a);
+  --text: #0b2b16; /* dark, high contrast */
+  --on-accent: #0b1220;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+/* body/app */
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+.App { background: transparent; }
+
 
 .App-header {
+  background-color: var(--accent-dark);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -141,6 +182,12 @@ p {
   color: var(--white);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
+  font-size: calc(10px + 2vmin);
+  color: #ffffff;
+}
+
+.site-title { color: #ffffff; }
+.App-link { color: var(--accent); }
 
 .btn-login-main {
   background: rgba(255, 255, 255, 0.06);
@@ -215,26 +262,119 @@ p {
 .feature-card:hover {
   transform: translateY(-6px);
   border-color: var(--accent);
+  transform: translateY(-5px);
+}
+/* To-Do page styles */
+.todo-page {
+  max-width: 720px;
+  margin: 24px auto;
+  text-align: left;
+  padding: 0 16px;
 }
 
-.feature-card:hover::after {
-  box-shadow: 0 0 40px rgba(145, 179, 142, 0.28);
+.task-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+ .task-input { flex: 1 1 200px; padding: 10px; background: var(--surface); border: 1px solid rgba(0,0,0,0.06); border-radius:8px; color:var(--text); }
+.task-date { width: 160px; padding: 8px; background: var(--surface); border: 1px solid rgba(0,0,0,0.06); border-radius:8px; color:var(--text); }
+.task-notes { flex: 1 1 100%; padding: 10px; background: var(--surface); border: 1px solid rgba(0,0,0,0.06); border-radius:8px; color:var(--text); }
+.task-form-actions { display:flex; gap:8px; align-items:center; }
+
+
+.btn-link.danger { color:#ff6b6b; }
+
+.task-list { border-top:1px solid rgba(0,0,0,0.06); padding-top:12px; }
+.task-item { display:flex; justify-content:space-between; align-items:flex-start; padding:12px; border-bottom:1px dashed rgba(0,0,0,0.04); background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(0,0,0,0.01)); border-radius:8px; margin-bottom:8px; }.task-main { flex: 1 1 auto; }
+.task-meta { text-align:left; }
+.task-actions { display:flex; gap:8px; align-items:flex-start; justify-content:flex-end; min-width:120px; }.task-item .task-main { display:flex; gap:12px; align-items:flex-start; }
+.task-meta { font-size:14px; color:var(--text); }
+.task-item .task-title { font-weight:700; color:var(--accent-dark); }
+.task-item .task-title .nav-link { color:var(--accent-dark); padding:0; background:none; display:inline; }
+.task-item .task-title .nav-link:hover { text-decoration:underline; }
+
+.task-due { font-size:12px; color:var(--muted); text-align:left; display:block; }
+.task-notes-text { font-size:12px; color:var(--muted); text-align:left; display:block; }
+.task-item.completed { opacity:0.6; text-decoration:line-through; }
+
+ .empty { color: rgba(11,43,22,0.65); }
+ .site-nav { display:flex; gap:12px; padding:12px; background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
+ .nav-link { color:#fff; text-decoration:none; padding:6px 10px; border-radius:8px; background: rgba(255,255,255,0.04); }
+.nav-link:hover { background: rgba(255,255,255,0.08); }
+.site-main { padding: 18px 0; }
+
+/* Due badges */
+.badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:12px; background:rgba(255,255,255,0.04); }
+.due-soon { color:#ffb703; }
+.overdue { color:#ff6b6b; font-weight:700; }
+
+/* To-Do controls */
+.todo-controls { display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+.todo-controls > * { margin: 4px 0; }
+.todo-controls .controls-right { margin-left:auto; display:flex; gap:8px; align-items:center; }
+.search-input { padding:6px 8px; flex:1 1 200px; min-width:140px; }
+.filter-select { padding:6px 8px; }
+.small-btn { padding:6px 8px; font-size:14px; }
+
+.btn-secondary { background: var(--surface); border:none; padding:8px 12px; cursor:pointer; border-radius:12px; color:var(--text); }
+.btn-secondary:hover { filter:brightness(0.98); transform:translateY(-1px); }
+.btn-link { background:none; border:none; color:var(--accent); cursor:pointer; text-decoration:underline; padding:6px 8px; border-radius:8px; }
+.btn-primary { display:inline-flex; align-items:center; padding:8px 12px; background: var(--accent); border:none; border-radius:12px; cursor:pointer; color:var(--on-accent); text-decoration:none; }
+.btn-primary:hover { background: var(--accent-dark); }
+
+/* Generic button rounding */
+button, input[type="button"], input[type="submit"] { border-radius:10px; }
+
+/* Comments / Task detail */
+.comment-list { display:flex; flex-direction:column; gap:12px; }
+.comment-item { padding:10px; border-radius:8px; background:rgba(255,255,255,0.02); }
+.comment-author { font-weight:700; font-size:13px; }
+.comment-time { font-weight:400; color:#9ea3ab; font-size:12px; margin-left:8px; }
+.comment-text { margin-top:6px; }
+.notify-toggle input { transform:scale(1.05); }
+
+/* Manage page tweaks: darker titles, due, and placeholders */
+.manage-page .task-title { color: rgba(11,43,22,0.98); }
+.manage-page .task-due, .manage-page .task-notes-text { color: rgba(11,43,22,0.95); }
+.manage-page .task-input::placeholder,
+.manage-page .task-notes::placeholder { color: rgba(11,43,22,0.9); }
+
+/* Task detail: darker title, due date, and notes */
+.task-detail h2 { color: rgba(11,43,22,0.98); }
+.task-detail .task-title { color: rgba(11,43,22,0.98); }
+.task-detail .task-due, .task-detail .task-notes-text { color: rgba(11,43,22,0.95); }
+
+/* To-Do page: darker title, due date, and notes */
+.todo-page .task-title { color: rgba(11,43,22,0.98); }
+.todo-page .task-due, .todo-page .task-notes-text { color: rgba(11,43,22,0.95); }
+
+/* Tasks panel dropdown */
+.tasks-panel {
+  max-width: 720px;
+  margin: 12px auto;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Make Tasks button match nav links */
+.site-nav .btn-primary {
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav .btn-primary:hover {
+  background: rgba(255,255,255,0.15);
 }
 
 
-@media (max-width: 900px) {
-  h1 {
-    font-size: 3rem;
-  }
-
-  .features {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-.App-header p {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
 
