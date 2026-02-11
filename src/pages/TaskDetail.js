@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, /*useNavigate, useLocation*/ } from 'react-router-dom';
 import '../App.css';
+//comment out import that are not used for vercel
 
 export default function TaskDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
+  //const location = useLocation();
+  //const fromTasks = new URLSearchParams(location.search).get('from') === 'tasks';
   const [task, setTask] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [author, setAuthor] = useState('');
@@ -92,13 +95,13 @@ export default function TaskDetail() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>{task.title}</h2>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-secondary" onClick={() => navigate('/todos')}>Back</button>
+          <button className="btn-secondary" onClick={() => window.history.back()}>Back</button>
           <Link to="/todos/manage" className="btn-primary">Manage tasks</Link>
         </div>
       </div>
 
       <div className="task-meta" style={{ marginBottom: 12 }}>
-        <div><strong>Due:</strong> {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</div>
+        <div><strong>Due:</strong> {task.dueDate ? task.dueDate : 'No due date'}</div>
         {task.notes && <div style={{ marginTop: 6 }}><strong>Notes:</strong><div className="task-notes-text">{task.notes}</div></div>}
       </div>
 

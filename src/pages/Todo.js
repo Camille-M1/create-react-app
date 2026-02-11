@@ -48,33 +48,35 @@ function isOverdue(d) {
   return nd < t;
 }
 
-export default function Todo() {
-  const [tasks, setTasks] = useState([]);
+export default function Todo({ tasks: initialTasks = [] }) {
+  const [tasks, setTasks] = useState(initialTasks);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [showCompleted, setShowCompleted] = useState(true);
 
   useEffect(() => {
-    const raw = localStorage.getItem('tasks');
-    if (raw) setTasks(JSON.parse(raw));
-  }, []);
+    // Update when props change
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   // Sort by nearest due date first; tasks without a date go last
   const sorted = [...tasks].sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
 
-  const filtered = sorted.filter(t => {
-    if (!showCompleted && t.completed) return false;
+    const filtered = sorted.filter(t => {
+      // Hide done tasks unless 'Show completed' is checked
+      if (t.status === 'done' && !showCompleted) return false;
 
-    if (filter === 'overdue' && !isOverdue(t.dueDate)) return false;
-    if (filter === 'today' && !isToday(t.dueDate)) return false;
-    if (filter === 'week' && !isThisWeek(t.dueDate)) return false;
-    if (filter === 'no-due' && t.dueDate) return false;
+      if (!showCompleted && t.completed) return false;
+      if (filter === 'overdue' && !isOverdue(t.dueDate)) return false;
+      if (filter === 'today' && !isToday(t.dueDate)) return false;
+      if (filter === 'week' && !isThisWeek(t.dueDate)) return false;
+      if (filter === 'no-due' && t.dueDate) return false;
 
-    const search = (t.title + ' ' + (t.notes || '')).toLowerCase();
-    if (query && !search.includes(query.toLowerCase())) return false;
+      const search = (t.title + ' ' + (t.notes || '')).toLowerCase();
+      if (query && !search.includes(query.toLowerCase())) return false;
 
-    return true;
-  });
+      return true;
+    });
 
   function exportICS() {
     const items = tasks.filter(t => t.dueDate);
@@ -147,7 +149,7 @@ export default function Todo() {
             <div className="task-main">
               <div className="task-meta">
                 <div className="task-title"><Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link></div>
-                <div className={`task-due ${task.dueDate && new Date(task.dueDate) < new Date() ? 'overdue' : ''}`}>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</div>
+                <div className={`task-due ${task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 'overdue' : ''}`}>{task.dueDate ? task.dueDate : 'No due date'}</div>
                 {task.notes && <div className="task-notes-text">{task.notes}</div>}
               </div>
             </div>

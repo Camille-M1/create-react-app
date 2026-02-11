@@ -10,16 +10,19 @@ const statuses = [
 const StatusBoard = ({ tasks, onStatusChange }) => {
   return (
     <div className="board">
-      {statuses.map(status => (
-        <div key={status.key} className="column">
-          <h3>{status.label}</h3>
+      {statuses.map(status => {
+        const filteredTasks = tasks.filter(task => task.status === status.key);
+        return (
+          <div key={status.key} className="column">
+            <h3>{status.label}</h3>
 
-          {tasks
-            .filter(task => task.status === status.key)
-            .map(task => (
+            {filteredTasks.length === 0 && <p style={{ color: '#999', fontSize: '12px' }}>No tasks</p>}
+            {filteredTasks.map(task => (
               <div key={task.id} className="task-card">
-                {/* This is the task name */}
-                {task.text}
+                {/* Make only the task name clickable */}
+                <a href={`/todos/${task.id}?from=tasks`} style={{ textDecoration: 'underline', color: '#0074d9' }}>
+                  {task.text || task.title}
+                </a>
 
                 {/* Dropdown to change status */}
                 <select
@@ -34,8 +37,9 @@ const StatusBoard = ({ tasks, onStatusChange }) => {
                 </select>
               </div>
             ))}
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 };
