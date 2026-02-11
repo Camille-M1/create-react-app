@@ -20,7 +20,7 @@ function Calendar({ tasks = [] }) {
     if (task.dueDate) {
       // Parse as local date, not UTC
       const [yyyy, mm, dd] = task.dueDate.split('-');
-      const dt = new Date(year, monthIndex, 1); // fallback
+      //const dt = new Date(year, monthIndex, 1); // fallback
       if (yyyy && mm && dd) {
         // JS months are 0-based
         const localDate = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
