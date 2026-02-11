@@ -1,146 +1,121 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import RolesPage from "./RolesPage";
-import "./App.css";
+import React from 'react';
+import './App.css';
+import logo from './logo.png';
+import sorting from './sorting.png';
+import upload from './upload.png';
+import teamwork from './teamwork.png';
+import dashboard from './dashboard.png';
 
-// Pages / Components
-import Calendar from "./components/Calendar/Calendar";
-import Todo from "./pages/Todo";
-import ManageTodo from "./pages/ManageTodo";
-import NewTask from "./pages/NewTask";
-import TaskDetail from "./pages/TaskDetail";
-import TasksPage from "./pages/TasksPage";
-
-// ---------- HOME PAGE ----------
-function Home() {
+function App() {
   return (
-    <div className="home">
-      <header className="App-header">
-        <h1 className="site-title">Welcome to TaskPilot</h1>
-        <p className="tagline">
-          Manage tasks smarter. Start organizing your day.
-        </p>
+    <div className="App">
+      {/* NAVBAR */}
+      <nav className="navbar">
+        <div className="nav-brand">
+          Task<span>Pilot</span>
+        </div>
+        <div className="nav-links">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#contact">Contact</a>
+          <button className="btn btn-primary nav-btn">Get Started</button>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <header className="hero-section">
+        <div className="hero-inner">
+          <div className="hero-text">
+            <h1>Your ultimate task management <span>solution</span></h1>
+            <p>Streamline your workflow, crush your goals, and manage your day efficiently with TaskPilot.</p>
+            <div className="hero-buttons">
+              <button className="btn btn-primary">Get Started</button>
+              <button className="btn btn-secondary">Log In</button>
+            </div>
+          </div>
+          <div className="hero-image">
+            <div className="hero-image-box">
+              <img src={logo} alt="TaskPilot Logo" className="box-logo" />
+            </div>
+          </div>
+        </div>
       </header>
 
-      <section className="features">
-        <div className="feature-card">
-          <h3>Smart Sorting</h3>
-          <p>The Smart Task & Team Management System is a web-based application designed to help teams organize tasks, manage deadlines, assign roles, and track progress. </p>
+      {/* FEATURES */}
+      <section className="features" id="features">
+        <div className="feature-block">
+          <div className="feature-text">
+            <h3>Smart Sorting</h3>
+            <p>Organize your tasks efficiently and track progress seamlessly.</p>
+            <ul>
+              <li>Prioritize tasks in seconds</li>
+              <li>Automatic reminders</li>
+              <li>Visual progress indicators</li>
+            </ul>
+          </div>
+          <img src={sorting} alt="Smart Sorting" />
         </div>
-        <div className="feature-card">
-          <h3>Cloud Sync</h3>
-          <p>Access your tasks from your MacBook or on the go.</p>
+
+        <div className="feature-block">
+          <div className="feature-text">
+            <h3>Cloud Sync</h3>
+            <p>Access your tasks anywhere, anytime, on any device.</p>
+            <ul>
+              <li>Sync across multiple devices</li>
+              <li>Work offline & auto-update</li>
+              <li>Secure cloud storage</li>
+            </ul>
+          </div>
+          <img src={upload} alt="Cloud Sync" />
+        </div>
+
+        <div className="feature-block">
+          <div className="feature-text">
+            <h3>Team Collaboration</h3>
+            <p>Communicate and manage tasks with your team in real-time.</p>
+            <ul>
+              <li>Assign tasks with ease</li>
+              <li>Integrated chat & comments</li>
+              <li>Track team performance</li>
+            </ul>
+          </div>
+          <img src={teamwork} alt="Team Collaboration" />
+        </div>
+
+        <div className="feature-block">
+          <div className="feature-text">
+            <h3>Insights & Reports</h3>
+            <p>Track performance and optimize workflow with analytics.</p>
+            <ul>
+              <li>Visual dashboards</li>
+              <li>Weekly performance reports</li>
+              <li>Identify bottlenecks quickly</li>
+            </ul>
+          </div>
+          <img src={dashboard} alt="Insights & Reports" />
         </div>
       </section>
+
+      {/* CTA SECTION */}
+      <section className="cta-section">
+        <h2>Ready to take control of your tasks?</h2>
+        <button className="btn btn-primary">Get Started Free</button>
+      </section>
+
+      {/* FOOTER */}
+      <footer>
+        <p>© 2026 TaskPilot. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
 
-// ---------- MAIN APP ----------
-function App() {
-  const [users, setUsers] = useState([]);
-  const [tasks, setTasks] = useState(() => {
-    // Load tasks from localStorage on initial mount
-    const raw = localStorage.getItem('tasks');
-    return raw ? JSON.parse(raw) : [];
-  });
-
-  // Sync tasks to localStorage whenever they change
-  React.useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  // Listen for storage changes from other tabs/windows or NewTask/ManageTodo
-  React.useEffect(() => {
-    const handleStorageChange = () => {
-      const raw = localStorage.getItem('tasks');
-      if (raw) setTasks(JSON.parse(raw));
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  /*const addTask = (taskText, taskStatus) => {
-    const newTask = {
-      id: Date.now(),
-      title: taskText,
-      text: taskText,
-      status: taskStatus || "todo",
-      notes: '',
-      dueDate: null,
-      completed: false,
-      notifyOnComment: false,
-      comments: [],
-    };
-    setTasks([...tasks, newTask]);
-  };*/
-
-  const addTaskFromForm = (taskObj) => {
-    setTasks([...tasks, taskObj]);
-  };
-
-  const updateTaskStatus = (taskId, newStatus) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: newStatus,
-              completed: newStatus === 'done',
-              // Only archive if explicitly requested elsewhere
-            }
-          : task
-      )
-    );
-  };
-
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
-  };
-
-  return (
-    <BrowserRouter>
-      <div className="App">
-        {/* NAVIGATION */}
-        <nav className="site-nav">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/calendar" className="nav-link">Calendar</Link>
-          <Link to="/todos" className="nav-link">To-Do</Link>
-          <Link to="/tasks" className="nav-link">Tasks</Link>
-          <Link to="/roles" className="nav-link">Roles</Link>
-
-        </nav>
-
-        {/* PAGE CONTENT */}
-        <main className="site-main">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/calendar" element={<Calendar tasks={tasks} />} />
-            <Route path="/todos" element={<Todo tasks={tasks.filter(t => !t.archived)} allTasks={tasks} />} />
-            <Route path="/todos/manage" element={<ManageTodo tasks={tasks} onTasksChange={setTasks} />} />
-            <Route path="/todos/:id" element={<TaskDetail />} />
-            <Route path="/tasks/new" element={<NewTask onTaskCreated={addTaskFromForm} />} />
-
-
-            <Route path="/roles" element={<RolesPage users={users} setUsers={setUsers} /> } />
-
-            <Route
-              path="/tasks"
-              element={
-                <TasksPage
-                  tasks={tasks.filter(t => !t.archived)}
-                  onStatusChange={updateTaskStatus}
-                  onDeleteTask={deleteTask}
-                />
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
-  );
-}
-
 export default App;
+
+
+
+
+
+
+
 
