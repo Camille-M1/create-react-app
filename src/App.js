@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-
+import RolesPage from "./RolesPage";
 import "./App.css";
 
 // Pages / Components
@@ -38,6 +38,7 @@ function Home() {
 
 // ---------- MAIN APP ----------
 function App() {
+  const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState(() => {
     // Load tasks from localStorage on initial mount
     const raw = localStorage.getItem('tasks');
@@ -107,6 +108,8 @@ function App() {
           <Link to="/calendar" className="nav-link">Calendar</Link>
           <Link to="/todos" className="nav-link">To-Do</Link>
           <Link to="/tasks" className="nav-link">Tasks</Link>
+          <Link to="/roles" className="nav-link">Roles</Link>
+
         </nav>
 
         {/* PAGE CONTENT */}
@@ -118,6 +121,10 @@ function App() {
             <Route path="/todos/manage" element={<ManageTodo tasks={tasks} onTasksChange={setTasks} />} />
             <Route path="/todos/:id" element={<TaskDetail />} />
             <Route path="/tasks/new" element={<NewTask onTaskCreated={addTaskFromForm} />} />
+
+
+            <Route path="/roles" element={<RolesPage users={users} setUsers={setUsers} /> } />
+
             <Route
               path="/tasks"
               element={
