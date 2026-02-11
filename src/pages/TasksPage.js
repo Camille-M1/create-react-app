@@ -87,29 +87,32 @@ const TasksPage = ({ tasks, onStatusChange, onDeleteTask }) => {
 
       {showTemplates && (
         <div className="template-section" style={{ marginBottom: 24, padding: 12, border: '1px solid #eee', borderRadius: 8 }}>
+
           <h3>Save Task Template</h3>
-          <input
-            className="task-input"
-            placeholder="Template title"
-            value={templateTitle}
-            onChange={e => setTemplateTitle(e.target.value)}
-            style={{ marginBottom: 8 }}
-          />
-          <input
-            type="date"
-            className="task-date"
-            value={templateDueDate}
-            onChange={e => setTemplateDueDate(e.target.value)}
-            style={{ marginBottom: 8 }}
-          />
-          <textarea
-            className="task-notes"
-            placeholder="Template notes (optional)"
-            value={templateNotes}
-            onChange={e => setTemplateNotes(e.target.value)}
-            style={{ marginBottom: 8 }}
-          />
-          <button className="btn-secondary" onClick={saveTemplate} style={{ marginBottom: 12 }}>Save as Template</button>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 8, flexWrap: 'wrap' }}>
+            <input
+              className="task-input"
+              placeholder="Template title"
+              value={templateTitle}
+              onChange={e => setTemplateTitle(e.target.value)}
+              style={{ minWidth: 180 }}
+            />
+            <input
+              type="date"
+              className="task-date"
+              value={templateDueDate}
+              onChange={e => setTemplateDueDate(e.target.value)}
+              style={{ minWidth: 140 }}
+            />
+            <textarea
+              className="task-notes"
+              placeholder="Template notes (optional)"
+              value={templateNotes}
+              onChange={e => setTemplateNotes(e.target.value)}
+              style={{ minWidth: 220, resize: 'vertical' }}
+            />
+            <button className="btn-secondary" onClick={saveTemplate} style={{ alignSelf: 'flex-end', height: 40 }}>Save as Template</button>
+          </div>
 
           <h4>Templates</h4>
           {templates.length === 0 && <p style={{ color: '#999' }}>No templates saved.</p>}
