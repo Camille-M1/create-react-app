@@ -77,7 +77,7 @@ const TasksPage = ({ tasks, onStatusChange, onDeleteTask }) => {
   return (
     <div className="tasks-page">
       <h2>Tasks</h2>
-      <Link to="/tasks/new" className="btn-primary" style={{ marginBottom: '20px', display: 'inline-block' }}>
+      <Link to="/tasks/new" className="btn-secondary" style={{ marginBottom: '20px', display: 'inline-block' }} title="Create a new task">
         New Tasks
       </Link>
 

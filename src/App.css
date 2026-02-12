@@ -21,6 +21,9 @@ body {
 
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -247,6 +250,7 @@ footer {
   background: #f1f3f2;
   color: var(--text-dark);
   font-size: 0.9rem;
+  margin-top: auto;
 }
 
 

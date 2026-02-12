@@ -138,7 +138,7 @@ export default function Todo({ tasks: initialTasks = [] }) {
         <button className="btn-secondary" onClick={exportICS}>Export</button>
 
         <div style={{ marginLeft: 'auto' }}>
-          <Link to="/todos/manage" className="btn-primary">Manage tasks</Link>
+          <Link to="/todos/manage" className="btn-secondary" title="Edit, complete, or delete tasks">Manage tasks</Link>
         </div>
       </div>
 
