@@ -8,7 +8,6 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
   const [notes, setNotes] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
-  const normalizeTasks = useCallback(tasks);
 
   function normalizeTasks(list) {
     return sortTasks(list.filter(t => !t.archived));
@@ -18,7 +17,7 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
   useEffect(() => {
     // Only show non-archived tasks, keep consistent ordering
     setTasks(normalizeTasks(initialTasks));
-  }, [initialTasks, normalizeTasks]);
+  }, [initialTasks]);
 
   // Keep localStorage and parent component in sync
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
       // Update parent with normalized tasks to avoid reordering flicker
       onTasksChange(normalizeTasks(tasks));
     }
-  }, [tasks, onTasksChange, normalizeTasks]);
+  }, [tasks, onTasksChange]);
 
   function dateVal(d) {
     return d && !isNaN(new Date(d)) ? new Date(d).getTime() : Infinity;
