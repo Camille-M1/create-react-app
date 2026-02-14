@@ -1,5 +1,19 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
+
+function dateVal(d) {
+  return d && !isNaN(new Date(d)) ? new Date(d).getTime() : Infinity;
+}
+
+function sortTasks(list) {
+  const upcoming = list.filter(t => !t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
+  const completed = list.filter(t => t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
+  return [...upcoming, ...completed];
+}
+
+function normalizeTasks(list) {
+  return sortTasks(list.filter(t => !t.archived));
+}
 
 export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) {
   const [tasks, setTasks] = useState(initialTasks);
@@ -8,10 +22,6 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
   const [notes, setNotes] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
-
-  function normalizeTasks(list) {
-    return sortTasks(list.filter(t => !t.archived));
-  }
 
   // Update local state when props change
   useEffect(() => {
@@ -27,16 +37,6 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
       onTasksChange(normalizeTasks(tasks));
     }
   }, [tasks, onTasksChange]);
-
-  function dateVal(d) {
-    return d && !isNaN(new Date(d)) ? new Date(d).getTime() : Infinity;
-  }
-
-  function sortTasks(list) {
-    const upcoming = list.filter(t => !t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
-    const completed = list.filter(t => t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
-    return [...upcoming, ...completed];
-  }
 
   function clearForm() {
     setTitle('');
