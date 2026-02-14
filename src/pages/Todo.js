@@ -63,10 +63,17 @@ export default function Todo({ tasks: initialTasks = [] }) {
   const sorted = [...tasks].sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
 
     const filtered = sorted.filter(t => {
-      // Hide done tasks unless 'Show completed' is checked
-      if (t.status === 'done' && !showCompleted) return false;
+      const isCompleted = t.completed || t.status === 'done';
 
-      if (!showCompleted && t.completed) return false;
+      // Completed filter: show only completed tasks
+      if (filter === 'completed') return isCompleted;
+
+      // Hide done tasks by default in the To‑Do list
+      if (t.status === 'done') return false;
+
+      // Hide completed tasks unless 'Show completed' is checked
+      if (!showCompleted && isCompleted) return false;
+
       if (filter === 'overdue' && !isOverdue(t.dueDate)) return false;
       if (filter === 'today' && !isToday(t.dueDate)) return false;
       if (filter === 'week' && !isThisWeek(t.dueDate)) return false;
@@ -125,6 +132,7 @@ export default function Todo({ tasks: initialTasks = [] }) {
 
         <select className="filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">All</option>
+          <option value="completed">Completed</option>
           <option value="overdue">Overdue</option>
           <option value="today">Due today</option>
           <option value="week">Due this week</option>

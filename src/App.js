@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import RolesPage from './RolesPage';
 import Todo from './pages/Todo';
 import Login from './pages/Login';
@@ -7,6 +7,8 @@ import TasksPage from './pages/TasksPage';
 import NewTask from './pages/NewTask';
 import ManageTodo from './pages/ManageTodo';
 import GetStarted from './pages/GetStarted';
+import TaskDetail from './pages/TaskDetail';
+import CalendarPage from './pages/CalendarPage';
 import './App.css';
 import logo from './logo.png';
 import sorting from './sorting.png';
@@ -15,9 +17,43 @@ import teamwork from './teamwork.png';
 import dashboard from './dashboard.png';
 
 function App() {
-  // Load tasks from localStorage
-  const raw = typeof window !== 'undefined' ? window.localStorage.getItem('tasks') : null;
-  const tasks = raw ? JSON.parse(raw) : [];
+  const loadTasks = useCallback(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = window.localStorage.getItem('tasks');
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error('Failed to read tasks', err);
+      return [];
+    }
+  }, []);
+
+  const [tasks, setTasks] = useState(() => loadTasks());
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem('tasks', JSON.stringify(tasks));
+    } catch (err) {
+      console.error('Failed to write tasks', err);
+    }
+  }, [tasks]);
+
+  const handleTaskCreated = useCallback((newTask) => {
+    setTasks(prev => [...prev, newTask]);
+  }, []);
+
+  const handleTasksChange = useCallback((nextTasks) => {
+    setTasks(nextTasks);
+  }, []);
+
+  const handleStatusChange = useCallback((id, status) => {
+    setTasks(prev => prev.map(t => (t.id === id ? { ...t, status } : t)));
+  }, []);
+
+  const handleDeleteTask = useCallback((id) => {
+    setTasks(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   return (
     <div className="App">
@@ -33,19 +69,33 @@ function App() {
           <a href="#contact" className="nav-link">Contact</a>
           <a href="/roles" className="nav-link">Roles</a>
           <a href="/todos" className="nav-link">Todo</a>
+          <a href="/calendar" className="nav-link">Calendar</a>
           <a href="/login" className="nav-link">Login</a>
           <a href="/tasks" className="nav-link">Tasks</a>
-          <button className="btn btn-primary nav-btn">Get Started</button>
+          <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
         </div>
       </nav>
 
       <Routes>
         <Route path="/roles" element={<RolesPage />} />
-        <Route path="/todos" element={<Todo />} />
+        <Route path="/todos" element={<Todo tasks={tasks} />} />
+        <Route path="/calendar" element={<CalendarPage tasks={tasks} />} />
+        <Route path="/todos/:id" element={<TaskDetail />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/tasks" element={<TasksPage tasks={tasks} />} />
-        <Route path="/tasks/new" element={<NewTask />} />
-        <Route path="/todos/manage" element={<ManageTodo />} />
+        <Route path="/tasks/:id" element={<TaskDetail />} />
+        <Route
+          path="/tasks"
+          element={
+            <TasksPage
+              tasks={tasks}
+              onStatusChange={handleStatusChange}
+              onDeleteTask={handleDeleteTask}
+              onTaskCreated={handleTaskCreated}
+            />
+          }
+        />
+        <Route path="/tasks/new" element={<NewTask onTaskCreated={handleTaskCreated} />} />
+        <Route path="/todos/manage" element={<ManageTodo tasks={tasks} onTasksChange={handleTasksChange} />} />
         <Route path="/get-started" element={<GetStarted />} />
         {/* Default home page: show GetStarted */}
         <Route path="/" element={
@@ -57,8 +107,8 @@ function App() {
                   <h1>Your ultimate task management <span>solution</span></h1>
                   <p>Streamline your workflow, crush your goals, and manage your day efficiently with TaskPilot.</p>
                   <div className="hero-buttons">
-                    <button className="btn btn-primary">Get Started</button>
-                    <button className="btn btn-secondary">Log In</button>
+                    <Link to="/get-started" className="btn btn-primary">Get Started</Link>
+                    <Link to="/login" className="btn btn-secondary">Log In</Link>
                   </div>
                 </div>
                 <div className="hero-image">
@@ -127,7 +177,7 @@ function App() {
             {/* CTA SECTION */}
             <section className="cta-section">
               <h2>Ready to take control of your tasks?</h2>
-              <button className="btn btn-primary">Get Started Free</button>
+              <Link to="/get-started" className="btn btn-primary">Get Started Free</Link>
             </section>
           </>
         } />

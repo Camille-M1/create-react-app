@@ -4,7 +4,7 @@ import StatusBoard from '../StatusBoard';
 import TaskList from '../TaskList';
 import '../App.css';
 
-const TasksPage = ({ tasks, onStatusChange, onDeleteTask }) => {
+const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showCreateFromTemplate, setShowCreateFromTemplate] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -56,16 +56,19 @@ const TasksPage = ({ tasks, onStatusChange, onDeleteTask }) => {
       notifyOnComment: false,
       comments: [],
     };
-    // Save to localStorage
-    const raw = localStorage.getItem('tasks');
-    const taskList = raw ? JSON.parse(raw) : [];
-    taskList.push(newTask);
-    localStorage.setItem('tasks', JSON.stringify(taskList));
+    if (onTaskCreated) {
+      onTaskCreated(newTask);
+    } else {
+      // Save to localStorage
+      const raw = localStorage.getItem('tasks');
+      const taskList = raw ? JSON.parse(raw) : [];
+      taskList.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(taskList));
+    }
     setShowCreateFromTemplate(false);
     setNewTaskTitle('');
     setNewTaskNotes('');
     setNewTaskDueDate('');
-    window.location.reload(); // Refresh to show new task
   };
 
   // Delete template

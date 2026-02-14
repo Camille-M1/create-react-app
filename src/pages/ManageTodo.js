@@ -9,18 +9,22 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
 
+  function normalizeTasks(list) {
+    return sortTasks(list.filter(t => !t.archived));
+  }
+
   // Update local state when props change
   useEffect(() => {
-    // Only show non-archived tasks
-    setTasks(initialTasks.filter(t => !t.archived));
+    // Only show non-archived tasks, keep consistent ordering
+    setTasks(normalizeTasks(initialTasks));
   }, [initialTasks]);
 
   // Keep localStorage and parent component in sync
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
     if (onTasksChange) {
-      // Update parent with only non-archived tasks
-      onTasksChange(tasks);
+      // Update parent with normalized tasks to avoid reordering flicker
+      onTasksChange(normalizeTasks(tasks));
     }
   }, [tasks, onTasksChange]);
 
@@ -134,7 +138,7 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
         ))}
       </div>
     <div className="footer-actions" style={{ marginTop: 12 }}>
-      <button className="btn-secondary" onClick={clearCompleted}>Clear completed</button>
+      <button className="btn-secondary" onClick={clearCompleted}>Clear selected</button>
     </div>
   </div>
   );

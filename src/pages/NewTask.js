@@ -26,15 +26,14 @@ export default function NewTask({ onTaskCreated }) {
       comments: [],
     };
 
-    // Save to localStorage
-    const raw = localStorage.getItem('tasks');
-    const tasks = raw ? JSON.parse(raw) : [];
-    tasks.push(newTask);
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-
-    // Notify parent component if callback provided
     if (onTaskCreated) {
       onTaskCreated(newTask);
+    } else {
+      // Save to localStorage
+      const raw = localStorage.getItem('tasks');
+      const tasks = raw ? JSON.parse(raw) : [];
+      tasks.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     // Navigate back to tasks page

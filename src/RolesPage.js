@@ -1,14 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const RolesPage = ({ users = [], setUsers }) => {
   const [name, setName] = useState("");
   const [role, setRole] = useState("team");
+  const [localUsers, setLocalUsers] = useState(() => {
+    if (typeof window === "undefined") return users;
+    try {
+      const raw = window.localStorage.getItem("rolesUsers");
+      return raw ? JSON.parse(raw) : users;
+    } catch (err) {
+      console.error("Failed to read rolesUsers", err);
+      return users;
+    }
+  });
+
+  useEffect(() => {
+    if (setUsers) {
+      setLocalUsers(users);
+    }
+  }, [users, setUsers]);
+
+  useEffect(() => {
+    if (setUsers || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("rolesUsers", JSON.stringify(localUsers));
+    } catch (err) {
+      console.error("Failed to write rolesUsers", err);
+    }
+  }, [localUsers, setUsers]);
+
+  const effectiveUsers = setUsers ? users : localUsers;
+  const updateUsers = setUsers || setLocalUsers;
 
   const addUser = () => {
     if (!name.trim()) return;
 
-    setUsers([
-      ...users,
+    updateUsers([
+      ...effectiveUsers,
       {
         id: Date.now(),
         name,
@@ -21,11 +49,13 @@ const RolesPage = ({ users = [], setUsers }) => {
   };
 
   const changeRole = (id, newRole) => {
-    setUsers(users.map((user) => (user.id === id ? { ...user, role: newRole } : user)));
+    updateUsers(
+      effectiveUsers.map((user) => (user.id === id ? { ...user, role: newRole } : user))
+    );
   };
 
   const removeUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+    updateUsers(effectiveUsers.filter((user) => user.id !== id));
   };
 
   return (
@@ -57,7 +87,7 @@ const RolesPage = ({ users = [], setUsers }) => {
 
       {/* User List */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {users.map((user) => (
+        {effectiveUsers.map((user) => (
           <div
             key={user.id}
             style={{
