@@ -52,6 +52,7 @@ export default function Todo({ tasks: initialTasks = [] }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
   const [showCompleted, setShowCompleted] = useState(true);
 
   useEffect(() => {
@@ -78,6 +79,8 @@ export default function Todo({ tasks: initialTasks = [] }) {
       if (filter === 'today' && !isToday(t.dueDate)) return false;
       if (filter === 'week' && !isThisWeek(t.dueDate)) return false;
       if (filter === 'no-due' && t.dueDate) return false;
+
+      if (priorityFilter !== 'all' && (t.priority || 'medium') !== priorityFilter) return false;
 
       const search = (t.title + ' ' + (t.notes || '')).toLowerCase();
       if (query && !search.includes(query.toLowerCase())) return false;
@@ -139,6 +142,13 @@ export default function Todo({ tasks: initialTasks = [] }) {
           <option value="no-due">No due date</option>
         </select>
 
+        <select className="filter-select" value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}>
+          <option value="all">All priorities</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+
         <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
           <input type="checkbox" checked={showCompleted} onChange={e => setShowCompleted(e.target.checked)} /> Show completed
         </label>
@@ -158,6 +168,7 @@ export default function Todo({ tasks: initialTasks = [] }) {
               <div className="task-meta">
                 <div className="task-title"><Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link></div>
                 <div className={`task-due ${task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 'overdue' : ''}`}>{task.dueDate ? task.dueDate : 'No due date'}</div>
+                <div><strong>Priority:</strong> {(task.priority || 'medium').toUpperCase()}</div>
                 {task.notes && <div className="task-notes-text">{task.notes}</div>}
               </div>
             </div>

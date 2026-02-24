@@ -12,6 +12,10 @@ export default function TaskDetail() {
   const [tasks, setTasks] = useState([]);
   const [author, setAuthor] = useState('');
   const [text, setText] = useState('');
+  const [commentFiles, setCommentFiles] = useState([]);
+
+  const priorityValue = (task?.priority || 'medium').toLowerCase();
+  const priorityLabel = priorityValue.charAt(0).toUpperCase() + priorityValue.slice(1);
 
   useEffect(() => {
     const raw = localStorage.getItem('tasks');
@@ -38,13 +42,44 @@ export default function TaskDetail() {
     setTask(found || null);
   }
 
-  function addComment(e) {
+  function toDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function buildAttachments(files) {
+    return Promise.all(
+      files.map(async (file) => ({
+        id: `${Date.now()}-${file.name}-${Math.random().toString(36).slice(2, 8)}`,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl: await toDataUrl(file),
+      }))
+    );
+  }
+
+  async function addComment(e) {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() && commentFiles.length === 0) return;
+
+    let attachments = [];
+    try {
+      attachments = await buildAttachments(commentFiles);
+    } catch (err) {
+      alert('One or more attachments could not be read. Please try again.');
+      return;
+    }
+
     const newComment = {
       id: Date.now().toString(),
       author: author.trim() || 'Anonymous',
       text: text.trim(),
+      attachments,
       createdAt: new Date().toISOString(),
     };
 
@@ -52,6 +87,7 @@ export default function TaskDetail() {
     saveTasks(next);
     setAuthor('');
     setText('');
+    setCommentFiles([]);
 
     // If notifications are enabled for this task, try to show a browser notification
     try {
@@ -100,9 +136,25 @@ export default function TaskDetail() {
         </div>
       </div>
 
-      <div className="task-meta" style={{ marginBottom: 12 }}>
-        <div><strong>Due:</strong> {task.dueDate ? task.dueDate : 'No due date'}</div>
+      <div className="task-detail-meta" style={{ marginBottom: 12 }}>
+        <div className="task-detail-row"><strong>Due:</strong> <span>{task.dueDate ? task.dueDate : 'No due date'}</span></div>
+        <div className="task-detail-row">
+          <strong>Priority:</strong>
+          <span className={`priority-badge ${priorityValue}`}>{priorityLabel}</span>
+        </div>
         {task.notes && <div style={{ marginTop: 6 }}><strong>Notes:</strong><div className="task-notes-text">{task.notes}</div></div>}
+        {(task.attachments || []).length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <strong>Attachments:</strong>
+            <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+              {(task.attachments || []).map(file => (
+                <li key={file.id || `${file.name}-${file.size}`}>
+                  <a href={file.dataUrl} download={file.name}>{file.name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <div style={{ marginBottom: 12 }}>
@@ -119,9 +171,15 @@ export default function TaskDetail() {
         <form onSubmit={addComment} style={{ marginBottom: 12 }}>
           <input placeholder="Your name (optional)" value={author} onChange={e => setAuthor(e.target.value)} style={{ padding: 6, width: '100%', marginBottom: 8 }} />
           <textarea placeholder="Add a comment" value={text} onChange={e => setText(e.target.value)} style={{ padding: 8, width: '100%', minHeight: 80 }} />
+          <input
+            type="file"
+            multiple
+            onChange={e => setCommentFiles(Array.from(e.target.files || []))}
+            style={{ marginTop: 8 }}
+          />
           <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
             <button className="btn-primary" type="submit">Post comment</button>
-            <button type="button" className="btn-secondary" onClick={() => { setAuthor(''); setText(''); }}>Clear</button>
+            <button type="button" className="btn-secondary" onClick={() => { setAuthor(''); setText(''); setCommentFiles([]); }}>Clear</button>
           </div>
         </form>
 
@@ -131,6 +189,15 @@ export default function TaskDetail() {
             <div key={c.id} className="comment-item">
               <div className="comment-author">{c.author} <span className="comment-time">{new Date(c.createdAt).toLocaleString()}</span></div>
               <div className="comment-text">{c.text}</div>
+              {(c.attachments || []).length > 0 && (
+                <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                  {(c.attachments || []).map(file => (
+                    <li key={file.id || `${file.name}-${file.size}`}>
+                      <a href={file.dataUrl} download={file.name}>{file.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </div>

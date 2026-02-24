@@ -16,32 +16,38 @@ function normalizeTasks(list) {
 }
 
 export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) {
-  const [tasks, setTasks] = useState(initialTasks);
+  const hasExternalState = typeof onTasksChange === 'function';
+  const [localTasks, setLocalTasks] = useState(() => normalizeTasks(initialTasks));
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
+  const tasks = hasExternalState ? normalizeTasks(initialTasks) : localTasks;
 
-  // Update local state when props change
+  // Keep fallback local state in sync when parent state is not provided
   useEffect(() => {
-    // Only show non-archived tasks, keep consistent ordering
-    setTasks(normalizeTasks(initialTasks));
-  }, [initialTasks]);
-
-  // Keep localStorage and parent component in sync
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    if (onTasksChange) {
-      // Update parent with normalized tasks to avoid reordering flicker
-      onTasksChange(normalizeTasks(tasks));
+    if (!hasExternalState) {
+      setLocalTasks(normalizeTasks(initialTasks));
     }
-  }, [tasks, onTasksChange]);
+  }, [initialTasks, hasExternalState]);
+
+  function commitTasks(nextTasks) {
+    const normalized = normalizeTasks(nextTasks);
+    localStorage.setItem('tasks', JSON.stringify(normalized));
+    if (hasExternalState) {
+      onTasksChange(normalized);
+      return;
+    }
+    setLocalTasks(normalized);
+  }
 
   function clearForm() {
     setTitle('');
     setDueDate('');
     setNotes('');
+    setPriority('medium');
     setEditingId(null);
     setNotify(false);
   }
@@ -53,12 +59,14 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
     setTitle(task.title);
     setDueDate(task.dueDate || '');
     setNotes(task.notes || '');
+    setPriority(task.priority || 'medium');
     setNotify(!!task.notifyOnComment);
   }
 
   function saveEdit(e) {
     e.preventDefault();
-    setTasks(prev => sortTasks(prev.map(t => t.id === editingId ? { ...t, title: title.trim(), dueDate: dueDate || null, notes: notes.trim(), notifyOnComment: !!notify } : t)));
+    const next = tasks.map(t => t.id === editingId ? { ...t, title: title.trim(), dueDate: dueDate || null, notes: notes.trim(), priority, notifyOnComment: !!notify } : t);
+    commitTasks(next);
     clearForm();
   }
 
@@ -67,20 +75,19 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
   }
 
   function toggleComplete(id) {
-    setTasks(prev => sortTasks(prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t)));
+    const next = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+    commitTasks(next);
   }
 
   function onDelete(id) {
     if (window.confirm('Delete this task?')) {
       const next = tasks.filter(t => t.id !== id);
-      setTasks(next);
-      localStorage.setItem('tasks', JSON.stringify(next));
-      if (onTasksChange) onTasksChange(next);
+      commitTasks(next);
     }
   }
 
   function clearCompleted() {
-    setTasks(prev => prev.filter(t => !t.completed));
+    commitTasks(tasks.filter(t => !t.completed));
   }
 
   return (
@@ -108,6 +115,18 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
             value={notes}
             onChange={e => setNotes(e.target.value)}
           />
+          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
+            Priority
+            <select
+              className="filter-select"
+              value={priority}
+              onChange={e => setPriority(e.target.value)}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
           <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <input type="checkbox" checked={notify} onChange={e => setNotify(e.target.checked)} /> Notify
           </label>
@@ -127,6 +146,7 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
               <div className="task-meta">
                 <div className="task-title">{task.title}</div>
                 <div className={`task-due ${task.dueDate && new Date(task.dueDate) < new Date() ? 'overdue' : ''}`}>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</div>
+                <div><strong>Priority:</strong> {(task.priority || 'medium').toUpperCase()}</div>
                 {task.notes && <div className="task-notes-text">{task.notes}</div>}
               </div>
             </div>

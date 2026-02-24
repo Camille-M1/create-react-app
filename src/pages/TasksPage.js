@@ -10,21 +10,58 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskNotes, setNewTaskNotes] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [newTaskPriority, setNewTaskPriority] = useState('medium');
+  const [newTaskTemplateAttachments, setNewTaskTemplateAttachments] = useState([]);
+  const [newTaskAttachmentFiles, setNewTaskAttachmentFiles] = useState([]);
   const [templateTitle, setTemplateTitle] = useState('');
   const [templateNotes, setTemplateNotes] = useState('');
   const [templateDueDate, setTemplateDueDate] = useState('');
+  const [templatePriority, setTemplatePriority] = useState('medium');
+  const [templateFiles, setTemplateFiles] = useState([]);
   const [templates, setTemplates] = useState(() => {
     const raw = localStorage.getItem('taskTemplates');
     return raw ? JSON.parse(raw) : [];
   });
 
+  function toDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function buildAttachments(files) {
+    return Promise.all(
+      files.map(async (file) => ({
+        id: `${Date.now()}-${file.name}-${Math.random().toString(36).slice(2, 8)}`,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl: await toDataUrl(file),
+      }))
+    );
+  }
+
   // Save current task as template
-  const saveTemplate = () => {
+  const saveTemplate = async () => {
     if (!templateTitle.trim()) return;
+
+    let attachments = [];
+    try {
+      attachments = await buildAttachments(templateFiles);
+    } catch (err) {
+      alert('One or more template attachments could not be read. Please try again.');
+      return;
+    }
+
     const newTemplate = {
       title: templateTitle.trim(),
       notes: templateNotes.trim(),
       dueDate: templateDueDate || null,
+      priority: templatePriority,
+      attachments,
     };
     const next = [...templates, newTemplate];
     setTemplates(next);
@@ -32,6 +69,8 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
     setTemplateTitle('');
     setTemplateNotes('');
     setTemplateDueDate('');
+    setTemplatePriority('medium');
+    setTemplateFiles([]);
   };
 
   // Load template into new task form
@@ -39,18 +78,32 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
     setNewTaskTitle(template.title);
     setNewTaskNotes(template.notes);
     setNewTaskDueDate(template.dueDate || '');
+    setNewTaskPriority(template.priority || 'medium');
+    setNewTaskTemplateAttachments(template.attachments || []);
+    setNewTaskAttachmentFiles([]);
     setShowCreateFromTemplate(true);
   };
 
   // Create task from template
-  const createTaskFromTemplate = () => {
+  const createTaskFromTemplate = async () => {
     if (!newTaskTitle.trim()) return;
+
+    let addedAttachments = [];
+    try {
+      addedAttachments = await buildAttachments(newTaskAttachmentFiles);
+    } catch (err) {
+      alert('One or more task attachments could not be read. Please try again.');
+      return;
+    }
+
     const newTask = {
       id: Date.now().toString(),
       title: newTaskTitle.trim(),
       text: newTaskTitle.trim(),
       dueDate: newTaskDueDate || null,
       notes: newTaskNotes.trim(),
+      priority: newTaskPriority,
+      attachments: [...newTaskTemplateAttachments, ...addedAttachments],
       completed: false,
       status: 'todo',
       notifyOnComment: false,
@@ -69,6 +122,9 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
     setNewTaskTitle('');
     setNewTaskNotes('');
     setNewTaskDueDate('');
+    setNewTaskPriority('medium');
+    setNewTaskTemplateAttachments([]);
+    setNewTaskAttachmentFiles([]);
   };
 
   // Delete template
@@ -114,6 +170,21 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
               onChange={e => setTemplateNotes(e.target.value)}
               style={{ minWidth: 220, resize: 'vertical' }}
             />
+            <select
+              className="filter-select"
+              value={templatePriority}
+              onChange={e => setTemplatePriority(e.target.value)}
+              style={{ minWidth: 140 }}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            <input
+              type="file"
+              multiple
+              onChange={e => setTemplateFiles(Array.from(e.target.files || []))}
+            />
             <button className="btn-secondary" onClick={saveTemplate} style={{ alignSelf: 'flex-end', height: 40 }}>Save as Template</button>
           </div>
 
@@ -124,7 +195,9 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
               <li key={idx} style={{ marginBottom: 8 }}>
                 <span style={{ fontWeight: 'bold' }}>{tpl.title}</span>
                 {tpl.dueDate && <span style={{ marginLeft: 8 }}>Due: {tpl.dueDate}</span>}
+                <span style={{ marginLeft: 8 }}>Priority: {(tpl.priority || 'medium').toUpperCase()}</span>
                 {tpl.notes && <span style={{ marginLeft: 8 }}>Notes: {tpl.notes}</span>}
+                {(tpl.attachments || []).length > 0 && <span style={{ marginLeft: 8 }}>Attachments: {tpl.attachments.length}</span>}
                 <button className="btn-primary" style={{ marginLeft: 12 }} onClick={() => loadTemplate(tpl)}>Create Task</button>
                 <button className="btn-secondary danger" style={{ marginLeft: 8 }} onClick={() => deleteTemplate(idx)}>Delete</button>
               </li>
@@ -157,6 +230,25 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
               placeholder="Notes (optional)"
               value={newTaskNotes}
               onChange={e => setNewTaskNotes(e.target.value)}
+              style={{ marginBottom: 8 }}
+            />
+            <select
+              className="filter-select"
+              value={newTaskPriority}
+              onChange={e => setNewTaskPriority(e.target.value)}
+              style={{ marginBottom: 8 }}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            {(newTaskTemplateAttachments || []).length > 0 && (
+              <p style={{ marginBottom: 8, textAlign: 'left' }}>Template attachments: {newTaskTemplateAttachments.length}</p>
+            )}
+            <input
+              type="file"
+              multiple
+              onChange={e => setNewTaskAttachmentFiles(Array.from(e.target.files || []))}
               style={{ marginBottom: 8 }}
             />
             <div style={{ display: 'flex', gap: 12 }}>

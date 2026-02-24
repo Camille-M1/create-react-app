@@ -16,6 +16,39 @@ import upload from './upload.png';
 import teamwork from './teamwork.png';
 import dashboard from './dashboard.png';
 
+const DUE_SOON_DISMISS_KEY = 'dueSoonTaskDismissals';
+const TASK_PROGRESS_POPUP_HIDDEN_KEY = 'taskProgressPopupHidden';
+
+function parseLocalDate(dateStr) {
+  if (!dateStr) return null;
+  const [year, month, day] = String(dateStr).split('-').map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
+function startOfDay(date = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function getDaysUntil(dateStr) {
+  const dueDate = parseLocalDate(dateStr);
+  if (!dueDate) return null;
+  const due = startOfDay(dueDate);
+  const today = startOfDay(new Date());
+  const diffMs = due.getTime() - today.getTime();
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function dueSoonMessage(daysLeft) {
+  if (daysLeft < 0) {
+    const overdueDays = Math.abs(daysLeft);
+    return overdueDays === 1 ? 'Overdue by 1 day' : `Overdue by ${overdueDays} days`;
+  }
+  if (daysLeft === 0) return 'Due today';
+  if (daysLeft === 1) return 'Due in 1 day';
+  return `Due in ${daysLeft} days`;
+}
+
 function App() {
   const loadTasks = useCallback(() => {
     if (typeof window === 'undefined') return [];
@@ -29,6 +62,22 @@ function App() {
   }, []);
 
   const [tasks, setTasks] = useState(() => loadTasks());
+  const [dueSoonAlerts, setDueSoonAlerts] = useState([]);
+  const [isProgressPopupHidden, setIsProgressPopupHidden] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(TASK_PROGRESS_POPUP_HIDDEN_KEY) === 'true';
+  });
+
+  const activeTasks = tasks.filter(task => !task.archived);
+  const completedTasks = activeTasks.filter(task => task.completed || task.status === 'done');
+  const progressPercent = activeTasks.length > 0
+    ? Math.round((completedTasks.length / activeTasks.length) * 100)
+    : 0;
+  const dueSoonCount = activeTasks.filter(task => {
+    if (task.completed || task.status === 'done') return false;
+    const daysLeft = getDaysUntil(task.dueDate);
+    return daysLeft !== null && daysLeft >= 0 && daysLeft <= 7;
+  }).length;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -55,6 +104,61 @@ function App() {
     setTasks(prev => prev.filter(t => t.id !== id));
   }, []);
 
+  const dismissDueSoonAlert = useCallback((alertId) => {
+    setDueSoonAlerts(prev => prev.filter(a => a.id !== alertId));
+
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem(DUE_SOON_DISMISS_KEY);
+      const dismissals = raw ? JSON.parse(raw) : {};
+      dismissals[alertId] = true;
+      window.localStorage.setItem(DUE_SOON_DISMISS_KEY, JSON.stringify(dismissals));
+    } catch (err) {
+      console.error('Failed to persist due-soon dismissal', err);
+    }
+  }, []);
+
+  const setProgressPopupHidden = useCallback((hidden) => {
+    setIsProgressPopupHidden(hidden);
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(TASK_PROGRESS_POPUP_HIDDEN_KEY, hidden ? 'true' : 'false');
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let dismissals = {};
+    try {
+      const raw = window.localStorage.getItem(DUE_SOON_DISMISS_KEY);
+      dismissals = raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.error('Failed to read due-soon dismissals', err);
+    }
+
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const nextAlerts = tasks
+      .filter(task => {
+        if (!task.notifyOnComment) return false;
+        if (task.completed || task.status === 'done') return false;
+        if (!task.dueDate) return false;
+        const daysLeft = getDaysUntil(task.dueDate);
+        return daysLeft === 7 || daysLeft === 1 || daysLeft === 0 || (daysLeft !== null && daysLeft < 0);
+      })
+      .map(task => {
+        const daysLeft = getDaysUntil(task.dueDate);
+        return {
+          id: `due-soon:${task.id}:${task.dueDate}:${todayKey}`,
+          taskId: task.id,
+          title: task.title,
+          daysLeft,
+        };
+      })
+      .filter(alert => !dismissals[alert.id])
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+
+    setDueSoonAlerts(nextAlerts);
+  }, [tasks]);
+
   return (
     <div className="App">
       {/* NAVBAR */}
@@ -75,6 +179,51 @@ function App() {
           <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
         </div>
       </nav>
+
+      {dueSoonAlerts.length > 0 && (
+        <div className="due-soon-container" aria-live="polite">
+          {dueSoonAlerts.map(alert => (
+            <div key={alert.id} className="due-soon-alert">
+              <div className="due-soon-content">
+                <strong>{alert.title}</strong>
+                <span>{dueSoonMessage(alert.daysLeft)}</span>
+              </div>
+              <div className="due-soon-actions">
+                <Link to={`/todos/${alert.taskId}`} className="btn-secondary due-soon-link">View</Link>
+                <button className="btn-secondary due-soon-dismiss" onClick={() => dismissDueSoonAlert(alert.id)}>Dismiss</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isProgressPopupHidden ? (
+        <button className="progress-popup-show" onClick={() => setProgressPopupHidden(false)}>
+          Show progress
+        </button>
+      ) : (
+        <div className="task-progress-popup" aria-live="polite">
+          <div className="task-progress-header">
+            <strong>Task Progress</strong>
+            <button className="task-progress-hide" onClick={() => setProgressPopupHidden(true)}>Hide</button>
+          </div>
+
+          <div className="task-progress-numbers">{completedTasks.length}/{activeTasks.length} complete</div>
+          <div className="task-progress-track">
+            <div className="task-progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
+
+          <div className="task-progress-meta">
+            <span>{progressPercent}% done</span>
+            <span>{dueSoonCount} due this week</span>
+          </div>
+
+          <div className="task-progress-actions">
+            <Link to="/tasks" className="btn-secondary task-progress-link">Tasks</Link>
+            <Link to="/todos" className="btn-secondary task-progress-link">To‑Do</Link>
+          </div>
+        </div>
+      )}
 
       <Routes>
         <Route path="/roles" element={<RolesPage />} />
