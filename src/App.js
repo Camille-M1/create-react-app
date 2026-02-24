@@ -168,14 +168,11 @@ function App() {
         </div>
         <div className="nav-links">
           <a href="/" className="nav-link">Home</a>
-          <a href="#features" className="nav-link">Features</a>
-          <a href="#pricing" className="nav-link">Pricing</a>
-          <a href="#contact" className="nav-link">Contact</a>
-          <a href="/roles" className="nav-link">Roles</a>
-          <a href="/todos" className="nav-link">Todo</a>
           <a href="/calendar" className="nav-link">Calendar</a>
-          <a href="/login" className="nav-link">Login</a>
           <a href="/tasks" className="nav-link">Tasks</a>
+          <a href="/todos" className="nav-link">To‑Do</a>
+          <a href="/login" className="nav-link">Login</a>
+          <a href="/roles" className="nav-link">Roles</a>
           <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
         </div>
       </nav>
