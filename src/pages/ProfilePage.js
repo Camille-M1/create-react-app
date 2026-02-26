@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { auth } from '../firebase';
 import { updateProfile, updatePassword, signOut } from 'firebase/auth';
