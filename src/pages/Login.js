@@ -12,7 +12,21 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      setMessage(`Login successful! Welcome, ${user.email}`);
+      console.log("Logged in user:", user);
+      // Send user info to backend
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }),
+      });
       navigate("/roles");
     } catch (error) {
       setMessage("Login failed. Check your credentials.");
@@ -22,7 +36,21 @@ function Login() {
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      setMessage(`Google login successful! Welcome, ${user.displayName}`);
+      console.log("Google user:", user);
+      // Send user info to backend
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }),
+      });
       navigate("/roles");
     } catch (error) {
       setMessage("Google login failed.");
