@@ -126,66 +126,118 @@ export default function Todo({ tasks: initialTasks = [] }) {
     URL.revokeObjectURL(url);
   }
 
+  // First, calculate the percentage at the top of your function (before the return)
+  const total = tasks.length;
+  const completedCount = tasks.filter(t => t.completed || t.status === 'done').length;
+  const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+  const strokeDasharray = `${percentage}, 100`;
+
   return (
-    <div className="todo-page">
-      <h2>To‑Do</h2>
-
-      <div className="todo-controls">
-        <input className="search-input" placeholder="Search tasks" value={query} onChange={e => setQuery(e.target.value)} />
-
-        <select className="filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="all">All</option>
-          <option value="completed">Completed</option>
-          <option value="overdue">Overdue</option>
-          <option value="today">Due today</option>
-          <option value="week">Due this week</option>
-          <option value="no-due">No due date</option>
-        </select>
-
-        <select className="filter-select" value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}>
-          <option value="all">All priorities</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <input type="checkbox" checked={showCompleted} onChange={e => setShowCompleted(e.target.checked)} /> Show completed
-        </label>
-
-        <button className="btn-secondary" onClick={exportICS}>Export</button>
-
-        <div style={{ marginLeft: 'auto' }}>
-          <Link to="/todos/manage" className="btn-secondary" title="Edit, complete, or delete tasks">Manage tasks</Link>
+    <div className="dashboard-layout">
+      {/* SIDEBAR SECTION */}
+      <aside className="sidebar-widgets">
+        <div className="progress-card">
+          <h4>Goal Progress</h4>
+          <svg viewBox="0 0 36 36" className="circular-chart">
+            <path className="circle-bg"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path className="circle"
+              strokeDasharray={strokeDasharray}
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <text x="18" y="20.35" className="percentage">{percentage}%</text>
+          </svg>
+          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '10px', textAlign: 'center' }}>
+            {completedCount} of {total} tasks completed
+          </p>
         </div>
-      </div>
+        
+        {/* Quick Tip Widget */}
+        <div className="progress-card" style={{ marginTop: '10px' }}>
+          <h4 style={{ color: 'var(--accent-dark)' }}>Pro Tip</h4>
+          <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: '1.4' }}>
+            Keep your momentum going! Sorting by "Today" helps you focus on immediate wins.
+          </p>
+        </div>
+      </aside>
 
-      <div className="task-list">
-        {filtered.length === 0 && <p className="empty">No tasks found.</p>}
-        {filtered.map(task => (
-          <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-            <div className="task-main">
-              <div className="task-meta">
-                <div className="task-title"><Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link></div>
-                <div className={`task-due ${task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 'overdue' : ''}`}>{task.dueDate ? task.dueDate : 'No due date'}</div>
-                <div><strong>Priority:</strong> {(task.priority || 'medium').toUpperCase()}</div>
-                {task.notes && <div className="task-notes-text">{task.notes}</div>}
+      {/* MAIN CONTENT SECTION */}
+      <div className="todo-page">
+        <h2>To‑Do</h2>
+
+        <div className="todo-controls">
+          <input 
+            className="search-input" 
+            placeholder="Search tasks" 
+            value={query} 
+            onChange={e => setQuery(e.target.value)} 
+          />
+
+          <select className="filter-select" value={filter} onChange={e => setFilter(e.target.value)}>
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="overdue">Overdue</option>
+            <option value="today">Due today</option>
+            <option value="week">Due this week</option>
+            <option value="no-due">No due date</option>
+          </select>
+
+          <select className="filter-select" value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}>
+            <option value="all">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input type="checkbox" checked={showCompleted} onChange={e => setShowCompleted(e.target.checked)} /> 
+            Show completed
+          </label>
+
+          <button className="btn-secondary" onClick={exportICS}>Export</button>
+
+          <div style={{ marginLeft: 'auto' }}>
+            <Link to="/todos/manage" className="btn-secondary" title="Edit, complete, or delete tasks">Manage tasks</Link>
+          </div>
+        </div>
+
+        <div className="task-list">
+          {filtered.length === 0 && <p className="empty">No tasks found.</p>}
+          {filtered.map(task => (
+            <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+              <div className="task-main">
+                <div className="task-meta">
+                  <div className="task-title">
+                    <Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link>
+                  </div>
+                  <div className={`task-due ${task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 'overdue' : ''}`}>
+                    {task.dueDate ? task.dueDate : 'No due date'}
+                  </div>
+                  <div className="task-priority-container">
+                    <strong>Priority:</strong> 
+                    <span className={`priority-tag priority-${(task.priority || 'medium').toLowerCase()}`}>
+                      {(task.priority || 'medium').toUpperCase()}
+                    </span>
+                  </div>
+                  {task.notes && <div className="task-notes-text">{task.notes}</div>}
+                </div>
+              </div>
+              <div className="task-actions">
+                {task.dueDate && (
+                  <a
+                    className="btn-link"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${formatICalDate(task.dueDate)}/${formatICalDate(new Date(new Date(task.dueDate).getFullYear(), new Date(task.dueDate).getMonth(), new Date(task.dueDate).getDate() + 1).toISOString())}&details=${encodeURIComponent(task.notes || '')}`}
+                  >
+                    Add to Google Calendar
+                  </a>
+                )}
               </div>
             </div>
-            <div className="task-actions">
-              {task.dueDate && (
-                <a
-                  className="btn-link"
-                  target="_blank"
-                  rel="noreferrer"
-                  href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${formatICalDate(task.dueDate)}/${formatICalDate(new Date(new Date(task.dueDate).getFullYear(), new Date(task.dueDate).getMonth(), new Date(task.dueDate).getDate() + 1).toISOString())}&details=${encodeURIComponent(task.notes || '')}`}
-                >
-                  Add to Google Calendar
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
