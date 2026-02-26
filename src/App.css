@@ -1182,3 +1182,183 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
   border-radius: 20px !important;
   border: 1px solid rgba(145, 179, 142, 0.1) !important;
 }
+
+.get-started-container {
+  max-width: 1200px; /* Wider container to fill the screen */
+  margin: 0 auto;
+  padding: 60px 40px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Container to center everything in the header */
+.hero-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+  background: #fff; /* Ensures a clean white background */
+}
+
+.hero-content {
+  max-width: 800px;
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+/* THE BUTTON FIX */
+.hero-btn {
+  background-color: #91b38e; /* Your sage green */
+  color: white;              /* White text for contrast */
+  padding: 16px 36px;       /* Large, clickable area */
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;             /* Removes that thin black border */
+  border-radius: 12px;      /* Smooth rounded corners */
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(145, 179, 142, 0.39); /* Soft green shadow */
+  transition: all 0.2s ease;
+}
+
+.hero-btn:hover {
+  background-color: #7a9e77; /* Darker green on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 20px rgba(145, 179, 142, 0.23);
+}
+
+/* Stats Bar Fixes the "Empty" feeling at the top */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 60px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 100px;
+  color: #666;
+}
+
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* The Two-Column Row */
+.row {
+  display: grid;
+  grid-template-columns: 300px 1fr; /* Icon/Title on left, List on right */
+  gap: 40px;
+  background: white;
+  padding: 50px;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  align-items: center;
+}
+
+.row-left {
+  border-right: 2px solid #eee;
+  padding-right: 20px;
+}
+
+.row-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.row-left h2 {
+  font-size: 1.4rem;
+  margin: 0;
+  color: #2d3436;
+}
+
+.row-left p {
+  color: #91b38e;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.row-right ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.row-right li {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Color Accents */
+.admin-row { border-top: 8px solid #91b38e; }
+.member-row { border-top: 8px solid #74b9ff; }
+.system-row { border-top: 8px solid #fab1a0; }
+
+.calendar-page-container {
+  display: grid;
+  grid-template-columns: 1fr 350px; /* Calendar on left, Sidebar on right */
+  gap: 30px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.calendar-main {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.calendar-sidebar {
+  background: #f9fbf9; /* Light sage tint */
+  padding: 25px;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mini-task-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-dot.completed { background: #91b38e; }
+.status-dot.in-progress { background: #74b9ff; }
+.status-dot.todo { background: #fab1a0; }
+
+.mini-task-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0;
+}
