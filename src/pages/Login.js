@@ -27,7 +27,7 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
-      navigate("/roles");
+      navigate("/tasks");
     } catch (error) {
       setMessage("Login failed. Check your credentials.");
     }
@@ -51,7 +51,7 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
-      navigate("/roles");
+      navigate("/tasks");
     } catch (error) {
       setMessage("Google login failed.");
     }

@@ -67,7 +67,7 @@ const ProfilePage = () => {
       {user ? (
         <div className="profile-details">
           <button onClick={handleSignOut} style={{ float: 'right', marginBottom: 16 }}>Sign Out</button>
-          <p><strong>Name:</strong> {user.displayName || user.name || 'N/A'}</p>
+          <p><strong>Name:</strong> {user.displayName || user.name || 'N/A'}</p> 
           {user.email && <p><strong>Email:</strong> {user.email}</p>}
           {user.uid && <p><strong>User ID:</strong> {user.uid}</p>}
           <form onSubmit={handleUsernameChange} style={{ marginTop: 24 }}>
