@@ -1,7 +1,8 @@
-
 import React, { useState } from "react";
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+
+
 
 function Signup() {
   const [email, setEmail] = useState("");
@@ -27,7 +28,6 @@ function Signup() {
       const user = userCredential.user;
       setMessage(`Signup successful! Welcome, ${user.email}`);
       console.log("Signed up user:", user);
-      // Optionally, redirect to login page or dashboard here
     } catch (error) {
       console.error(error);
       setMessage(`Signup failed: ${error.message}`);
@@ -35,33 +35,28 @@ function Signup() {
   };
 
   return (
-    <div className="login-page">
-      <h1>Sign Up</h1>
+    <div className="auth-container">
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="task-input"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="task-input"
         />
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="task-input"
         />
-        <button type="submit" className="btn-primary">
-          Sign Up
-        </button>
+        <button type="submit">Sign Up</button>
       </form>
       {message && <p style={{ marginTop: "12px" }}>{message}</p>}
     </div>

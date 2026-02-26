@@ -1,9 +1,7 @@
-// src/pages/Login.js
 import React, { useState } from "react";
-import { auth } from "../firebase";  // Correct path from pages folder
+import { auth } from "../firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,16 +9,8 @@ function Login() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      setMessage("Please enter both email and password.");
-      return;
-    }
-
-
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -37,13 +27,12 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+      navigate("/roles");
     } catch (error) {
-      console.error(error);
-      setMessage(`Login failed: ${error.message}`);
+      setMessage("Login failed. Check your credentials.");
     }
   };
 
-  // Google login
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -62,61 +51,56 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+      navigate("/roles");
     } catch (error) {
-      console.error(error);
-      setMessage(`Google login failed: ${error.message}`);
+      setMessage("Google login failed.");
     }
-
-    // Simulate successful login
-    setMessage("Login successful!");
-
-    // Redirect immediately to roles page
-    navigate("/roles");
-
   };
 
   return (
-    <div className="login-page">
-      <h1>Log In</h1>
+    /* 1. auth-container gives you the white card and the 80px margin */
+    <div className="auth-container">
+      <h2>Log In</h2>
 
-      {/* Email/Password Form */}
+      {/* 2. login-form applies the flex-direction: column and 16px gap */}
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="task-input"
+          required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="task-input"
+          required
         />
-        <button type="submit" className="btn-primary">
-          Log In
-        </button>
+        
+        {/* 3. This button uses your var(--accent) color automatically */}
+        <button type="submit">Log In</button>
       </form>
-      <p>
-       Don't have an account? <a href="/SignUp">Sign up here</a>
-      </p>
 
-      {/* Google Login */}
-      <button
-        onClick={handleGoogleLogin}
-        style={{ marginTop: "12px", backgroundColor: "#4285F4", color: "#fff", padding: "8px 16px", border: "none", borderRadius: "4px", cursor: "pointer" }}
+      <div style={{ margin: "10px 0", color: "#888" }}>or</div>
+
+      {/* 4. btn-secondary matches your grey hover style from the CSS */}
+      <button 
+        onClick={handleGoogleLogin} 
+        className="btn btn-secondary" 
+        style={{ width: "100%", padding: "14px" }}
       >
         Sign in with Google
       </button>
 
-      {/* Message */}
-      {message && <p style={{ marginTop: "12px" }}>{message}</p>}
-    </div>
-   
-  );
+      <p style={{ marginTop: "20px", fontSize: "0.9rem" }}>
+        Don't have an account? <Link to="/SignUp" style={{ color: "var(--accent-dark)", fontWeight: "bold" }}>Sign Up</Link>
+      </p>
 
+      {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
+    </div>
+  );
 }
 
 export default Login;

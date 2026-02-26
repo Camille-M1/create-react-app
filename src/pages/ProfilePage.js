@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { auth } from '../firebase';
-import { updateProfile, updatePassword } from 'firebase/auth';
+import { updateProfile, updatePassword, signOut } from 'firebase/auth';
 import './ProfilePage.css';
+
 
 const ProfilePage = () => {
   const { user, loading } = useAuth() || {};
@@ -11,6 +12,15 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      window.location.reload();
+    } catch (err) {
+      setMessage('Could not sign out.');
+    }
+  };
 
   if (loading) {
     return <div className="profile-page"><h2>Profile</h2><p>Loading...</p></div>;
@@ -56,6 +66,7 @@ const ProfilePage = () => {
       <h2>Profile</h2>
       {user ? (
         <div className="profile-details">
+          <button onClick={handleSignOut} style={{ float: 'right', marginBottom: 16 }}>Sign Out</button>
           <p><strong>Name:</strong> {user.displayName || user.name || 'N/A'}</p>
           {user.email && <p><strong>Email:</strong> {user.email}</p>}
           {user.uid && <p><strong>User ID:</strong> {user.uid}</p>}
