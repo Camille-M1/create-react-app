@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import RolesPage from './RolesPage';
 import Todo from './pages/Todo';
 import Login from './pages/Login';
+import Signup from './pages/signup';
 import TasksPage from './pages/TasksPage';
 import NewTask from './pages/NewTask';
 import ManageTodo from './pages/ManageTodo';
@@ -15,6 +16,7 @@ import sorting from './sorting.png';
 import upload from './upload.png';
 import teamwork from './teamwork.png';
 import dashboard from './dashboard.png';
+
 
 const DUE_SOON_DISMISS_KEY = 'dueSoonTaskDismissals';
 const TASK_PROGRESS_POPUP_HIDDEN_KEY = 'taskProgressPopupHidden';
@@ -228,6 +230,7 @@ function App() {
         <Route path="/calendar" element={<CalendarPage tasks={tasks} />} />
         <Route path="/todos/:id" element={<TaskDetail />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/tasks/:id" element={<TaskDetail />} />
         <Route
           path="/tasks"
