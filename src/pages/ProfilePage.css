@@ -1,0 +1,15 @@
+.profile-page {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.profile-details {
+  margin-top: 1rem;
+}
+.profile-details p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}

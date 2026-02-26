@@ -1,17 +1,23 @@
-import React, { createContext, useContext } from "react";
-import { ROLES } from "./Roles";   // ✅ ADD THIS
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const user = {
-    id: 1,
-    name: "Yasmin",
-    role: ROLES.TEAM_MEMBER, // ADMIN | TEAM_MEMBER | SYSTEM
-  };
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   );

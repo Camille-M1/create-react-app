@@ -26,6 +26,17 @@ function Login() {
       const user = userCredential.user;
       setMessage(`Login successful! Welcome, ${user.email}`);
       console.log("Logged in user:", user);
+      // Send user info to backend
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }),
+      });
     } catch (error) {
       console.error(error);
       setMessage(`Login failed: ${error.message}`);
@@ -40,6 +51,17 @@ function Login() {
       const user = result.user;
       setMessage(`Google login successful! Welcome, ${user.displayName}`);
       console.log("Google user:", user);
+      // Send user info to backend
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }),
+      });
     } catch (error) {
       console.error(error);
       setMessage(`Google login failed: ${error.message}`);
