@@ -2,19 +2,24 @@
 import React, { useState } from "react";
 import { auth } from "../firebase";  // Correct path from pages folder
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   // Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setMessage("Please enter both email and password.");
       return;
     }
+
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -39,6 +44,13 @@ function Login() {
       console.error(error);
       setMessage(`Google login failed: ${error.message}`);
     }
+
+    // Simulate successful login
+    setMessage("Login successful!");
+
+    // Redirect immediately to roles page
+    navigate("/roles");
+
   };
 
   return (
@@ -86,3 +98,4 @@ function Login() {
 }
 
 export default Login;
+
