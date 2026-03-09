@@ -1,37 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const AddTask = ({ onAddTask }) => {
-  const [taskText, setTaskText] = useState('');
-  const [taskStatus, setTaskStatus] = useState('todo'); // default
+const AddTask = ({ onTaskCreated }) => {
+  const [title, setTitle] = useState("");
+  const [status, setStatus] = useState("todo");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!taskText) return;
+    if (!title) return;
 
-    // Call parent function with task text and selected status
-    onAddTask(taskText, taskStatus);
+    onTaskCreated({
+      title,
+      status,
+    });
 
-    // Reset input and status
-    setTaskText('');
-    setTaskStatus('todo');
+    setTitle("");
+    setStatus("todo");
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+    <form onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="New task"
-        value={taskText}
-        onChange={(e) => setTaskText(e.target.value)}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
         required
       />
 
       <select
-        value={taskStatus}
-        onChange={(e) => setTaskStatus(e.target.value)}
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
       >
         <option value="todo">To Do</option>
-        <option value="inprogress">In Progress</option>
+        <option value="done">Done</option>
       </select>
 
       <button type="submit">Add Task</button>
