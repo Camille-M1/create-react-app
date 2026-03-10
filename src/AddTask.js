@@ -18,25 +18,43 @@ const AddTask = ({ onTaskCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="New task"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
+    <div className="template-card" style={{ marginBottom: "30px" }}>
+      <h3 style={{ marginBottom: "15px", fontWeight: "700" }}>
+        Quick Add
+      </h3>
 
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "12px" }}
       >
-        <option value="todo">To Do</option>
-        <option value="done">Done</option>
-      </select>
+        <input
+          className="task-input"
+          type="text"
+          placeholder="New task"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
 
-      <button type="submit">Add Task</button>
-    </form>
+        <select
+          className="filter-select"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="todo">To Do</option>
+          <option value="inprogress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+
+        <button
+          type="submit"
+          className="btn btn-primary"
+          style={{ width: "100%" }}
+        >
+          Add Task
+        </button>
+      </form>
+    </div>
   );
 };
 

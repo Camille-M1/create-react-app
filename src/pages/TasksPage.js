@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import StatusBoard from '../StatusBoard';
+import TaskList from '../TaskList';
 import '../App.css';
 
 const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showCreateFromTemplate, setShowCreateFromTemplate] = useState(false);
+  const [templateSearch, setTemplateSearch] = useState('');
+
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskNotes, setNewTaskNotes] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('medium');
   const [newTaskTemplateAttachments, setNewTaskTemplateAttachments] = useState([]);
   const [newTaskAttachmentFiles, setNewTaskAttachmentFiles] = useState([]);
+
   const [templateTitle, setTemplateTitle] = useState('');
   const [templateNotes, setTemplateNotes] = useState('');
   const [templateDueDate, setTemplateDueDate] = useState('');
@@ -87,14 +91,6 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
   const createTaskFromTemplate = async () => {
     if (!newTaskTitle.trim()) return;
 
-    let addedAttachments = [];
-    try {
-      addedAttachments = await buildAttachments(newTaskAttachmentFiles);
-    } catch {
-      alert('Error reading task attachments.');
-      return;
-    }
-
     const newTask = {
       title: newTaskTitle.trim(),
       description: newTaskNotes.trim(),
@@ -122,71 +118,160 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
     localStorage.setItem('taskTemplates', JSON.stringify(next));
   };
 
+  const filteredTemplates = templates.filter(tpl =>
+    tpl.title.toLowerCase().includes(templateSearch.toLowerCase())
+  );
+
   return (
     <div className="tasks-page">
-      <h2>Tasks</h2>
+      <div className="tasks-dashboard">
 
-      <Link
-        to="/tasks/new"
-        className="btn-secondary"
-        style={{ marginBottom: '20px', display: 'inline-block' }}
-      >
-        New Task
-      </Link>
+        <aside className="tasks-sidebar">
+          <div className="template-card">
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '15px' }}>Quick Actions</h2>
 
-      <button
-        className="btn-primary"
-        style={{ marginBottom: 16 }}
-        onClick={() => setShowTemplates(v => !v)}
-      >
-        {showTemplates ? 'Hide Templates' : 'Templates'}
-      </button>
+            <Link
+              to="/tasks/new"
+              className="btn btn-primary"
+              style={{ textDecoration: 'none', display: 'block', textAlign: 'center', marginBottom: '12px' }}
+            >
+              + Create New Task
+            </Link>
 
-      {showTemplates && (
-        <div style={{ marginBottom: 24 }}>
-          <h3>Save Task Template</h3>
-          <input
-            placeholder="Template title"
-            value={templateTitle}
-            onChange={e => setTemplateTitle(e.target.value)}
-          />
-          <button onClick={saveTemplate}>Save Template</button>
+            <button
+              className="btn btn-secondary"
+              style={{ width: '100%' }}
+              onClick={() => setShowTemplates(v => !v)}
+            >
+              {showTemplates ? 'Hide Templates' : 'Templates'}
+            </button>
+          </div>
 
-          <h4>Templates</h4>
-          {templates.map((tpl, idx) => (
-            <div key={idx}>
-              <strong>{tpl.title}</strong>
-              <button onClick={() => loadTemplate(tpl)}>Create Task</button>
-              <button onClick={() => deleteTemplate(idx)}>Delete</button>
+          {showTemplates && (
+            <div className="template-section">
+              <h3>Save Task Template</h3>
+
+              <input
+                className="task-input"
+                placeholder="Template title"
+                value={templateTitle}
+                onChange={e => setTemplateTitle(e.target.value)}
+              />
+
+              <input
+                type="date"
+                className="task-date"
+                value={templateDueDate}
+                onChange={e => setTemplateDueDate(e.target.value)}
+              />
+
+              <textarea
+                className="task-notes"
+                placeholder="Template notes (optional)"
+                value={templateNotes}
+                onChange={e => setTemplateNotes(e.target.value)}
+              />
+
+              <select
+                className="filter-select"
+                value={templatePriority}
+                onChange={e => setTemplatePriority(e.target.value)}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+
+              <button
+                className="btn btn-primary"
+                style={{ width: '100%' }}
+                onClick={saveTemplate}
+              >
+                Save as Template
+              </button>
+
+              <h4 style={{ marginTop: '24px' }}>Templates</h4>
+
+              <input
+                className="task-input"
+                placeholder="🔍 Search templates..."
+                value={templateSearch}
+                onChange={(e) => setTemplateSearch(e.target.value)}
+              />
+
+              <ul style={{ listStyle: 'none', padding: 0, marginTop: '10px' }}>
+                {filteredTemplates.map((tpl, idx) => (
+                  <li key={idx} style={{ marginBottom: '10px' }}>
+                    <strong>{tpl.title}</strong>
+                    <div style={{ marginTop: '6px' }}>
+                      <button onClick={() => loadTemplate(tpl)}>Create</button>
+                      <button onClick={() => deleteTemplate(idx)}>Delete</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </aside>
+
+        <main className="tasks-page-content">
+          <h2>Project Board</h2>
+
+          <StatusBoard
+            tasks={tasks}
+            onStatusChange={onStatusChange}
+            onDeleteTask={onDeleteTask}
+          />
+
+          <div style={{ marginTop: '40px' }}>
+            <h3>Task List Overview</h3>
+            <TaskList
+              tasks={tasks}
+              onDeleteTask={onDeleteTask}
+            />
+          </div>
+        </main>
+      </div>
 
       {showCreateFromTemplate && (
-        <div>
-          <h3>Create Task</h3>
-          <input
-            placeholder="Task title"
-            value={newTaskTitle}
-            onChange={e => setNewTaskTitle(e.target.value)}
-          />
-          <textarea
-            placeholder="Notes"
-            value={newTaskNotes}
-            onChange={e => setNewTaskNotes(e.target.value)}
-          />
-          <button onClick={createTaskFromTemplate}>Create</button>
-          <button onClick={() => setShowCreateFromTemplate(false)}>Cancel</button>
+        <div className="modal-bg">
+          <div className="modal">
+            <h3>Create Task from Template</h3>
+
+            <input
+              className="task-input"
+              placeholder="Task title"
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+            />
+
+            <textarea
+              className="task-notes"
+              placeholder="Notes"
+              value={newTaskNotes}
+              onChange={e => setNewTaskNotes(e.target.value)}
+            />
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                className="btn btn-primary"
+                style={{ flex: 1 }}
+                onClick={createTaskFromTemplate}
+              >
+                Create Task
+              </button>
+
+              <button
+                className="btn btn-secondary"
+                style={{ flex: 1 }}
+                onClick={() => setShowCreateFromTemplate(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
-
-      {/* 🔥 Only render StatusBoard (NO TaskList anymore) */}
-      <StatusBoard
-        tasks={tasks}
-        onStatusChange={onStatusChange}
-        onDeleteTask={onDeleteTask}
-      />
     </div>
   );
 };

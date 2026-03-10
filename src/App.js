@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
+import ProfilePage from './pages/ProfilePage';
 import RolesPage from './RolesPage';
 import Todo from './pages/Todo';
 import Login from './pages/Login';
@@ -121,10 +122,16 @@ function App() {
           <Link to="/roles" className="nav-link">Roles</Link>
           <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
         </div>
+        <div className="nav-profile">
+          <Link to="/profile" className="profile-link">
+            <span role="img" aria-label="Profile">👤</span> Profile
+          </Link>
+        </div>
       </nav>
 
       {/* ROUTES */}
       <Routes>
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/roles" element={<RolesPage />} />
         <Route path="/todos" element={<Todo tasks={tasks} />} />
         <Route path="/calendar" element={<CalendarPage tasks={tasks} />} />
