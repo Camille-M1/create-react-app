@@ -58,11 +58,11 @@ function Login() {
   };
 
   return (
-    /* 1. auth-container gives you the white card and the 80px margin */
+    /* 1. auth-container */
     <div className="auth-container">
       <h2>Log In</h2>
 
-      {/* 2. login-form applies the flex-direction: column and 16px gap */}
+      {/* login-form */}
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="email"
@@ -79,13 +79,13 @@ function Login() {
           required
         />
         
-        {/* 3. This button uses your var(--accent) color automatically */}
+        
         <button type="submit">Log In</button>
       </form>
 
       <div style={{ margin: "10px 0", color: "#888" }}>or</div>
 
-      {/* 4. btn-secondary matches your grey hover style from the CSS */}
+      
       <button 
         onClick={handleGoogleLogin} 
         className="btn btn-secondary" 

@@ -6,22 +6,22 @@
   
   .column {
     flex: 1;
-    background: #f0f0f0; /* light gray background instead of white */
+    background: #f0f0f0; 
     padding: 10px;
     border-radius: 8px;
-    min-height: 200px; /* makes columns more visible */
+    min-height: 200px; /
   }
   
   .column h3 {
     text-align: center;
     font-weight: bold;
-    color: #333; /* dark text for readability */
+    color: #333; 
     margin-bottom: 10px;
   }
   
   .task-card {
     background: white;
-    color: #333;   /* text color visible */
+    color: #333;   
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 6px;

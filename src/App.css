@@ -96,7 +96,7 @@ body {
 }
 
 .nav-btn {
-  padding: 10px 24px !important; /* Smaller size for navbar */
+  padding: 10px 24px !important; 
   font-size: 0.9rem !important;
 }
 
@@ -567,12 +567,12 @@ footer {
   background: var(--accent-dark);
   transform: translateY(-2px);
 }
-/* Container for the whole page */
+
 .todo-page {
   max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
-  text-align: left; /* Keeps text aligned left for better readability */
+  text-align: left; 
 }
 
 .todo-page h2 {
@@ -581,7 +581,7 @@ footer {
   color: var(--text-dark);
 }
 
-/* The horizontal bar with Search, Filters, and Export */
+
 .todo-controls {
   display: flex;
   flex-wrap: wrap;
@@ -603,7 +603,7 @@ footer {
 }
 
 .search-input {
-  flex: 1; /* Makes search box take up remaining space */
+  flex: 1; 
   min-width: 200px;
 }
 
@@ -611,14 +611,14 @@ footer {
   border-color: var(--accent);
 }
 
-/* The list of tasks */
+
 .task-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Individual Task Card */
+/* individual Task Card */
 .task-item {
   background: #fff;
   padding: 20px;
@@ -636,7 +636,7 @@ footer {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Styling for completed tasks */
+
 .task-item.completed {
   opacity: 0.6;
   background: #fcfcfc;
@@ -647,7 +647,7 @@ footer {
   color: #888;
 }
 
-/* Task Content */
+
 .task-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -674,7 +674,7 @@ footer {
 }
 
 .task-due.overdue {
-  color: #d93025; /* Red for overdue */
+  color: #d93025; 
   font-weight: bold;
 }
 
@@ -685,7 +685,7 @@ footer {
   color: #777;
 }
 
-/* Action Links (Add to Calendar) */
+
 .btn-link {
   font-size: 0.85rem;
   color: var(--accent-dark);
@@ -709,7 +709,7 @@ footer {
   font-style: italic;
 }
 
-/* Priority Colors within the card */
+
 .task-meta div strong {
     color: var(--text-dark);
 }
@@ -743,7 +743,7 @@ footer {
   letter-spacing: 0.5px;
 }
 
-/* Logic based on the priority level */
+
 .priority-high {
   background-color: #ffebee;
   color: #d32f2f;
@@ -762,26 +762,26 @@ footer {
   border: 1px solid var(--accent);
 }
 
-/* Modern Dashboard Improvements */
+
 .todo-page {
-  padding-top: 60px; /* Gives space below the navbar */
+  padding-top: 60px; 
 }
 
-/* Flex layout for the Task Card Header */
+
 .task-main {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* A subtle 'lift' and green border on hover to match your accent */
+
 .task-item:hover {
   border-color: var(--accent);
   transform: translateY(-4px);
   box-shadow: 0 12px 20px rgba(145, 179, 142, 0.15);
 }
 
-/* Checkbox styling to match your theme */
+
 input[type="checkbox"] {
   accent-color: var(--accent-dark);
   cursor: pointer;
@@ -789,20 +789,20 @@ input[type="checkbox"] {
   height: 18px;
 }
 
-/* Responsive Grid for Task Controls */
+
 @media (max-width: 768px) {
   .todo-controls {
     padding: 15px;
   }
   
   .todo-controls > * {
-    width: 100%; /* Stacks search and filters on mobile */
+    width: 100%; 
   }
 }
-/* Create a layout with a main area and a sidebar */
+
 .dashboard-container {
   display: grid;
-  grid-template-columns: 250px 1fr; /* Sidebar is 250px, Task list takes the rest */
+  grid-template-columns: 250px 1fr; 
   gap: 30px;
   max-width: 1200px;
   margin: 40px auto;
@@ -899,58 +899,58 @@ input[type="checkbox"] {
   font-weight: 700;
 }
 
-  /* 1. Main Page Container */
+  
 .tasks-page {
-  max-width: 1600px; /* Increased to give the board more room */
+  max-width: 1600px; 
   margin: 0 auto;
   padding: 40px;
 }
 
-/* 2. Dashboard Grid Fix (Sidebar vs Board) */
+
 .tasks-dashboard {
   display: grid;
-  grid-template-columns: 320px 1fr; /* Sidebar fixed, Board takes ALL remaining space */
+  grid-template-columns: 320px 1fr; 
   gap: 50px;
   margin: 40px auto;
   padding: 0 40px;
   align-items: start;
 }
 
-/* 3. The Stretched Status Board */
+
 .status-board {
   display: flex;
   gap: 24px;
-  justify-content: space-between; /* Spreads columns out */
-  width: 100%; /* Forces it to fill the grid-column */
+  justify-content: space-between; 
+  width: 100%;
   align-items: flex-start;
 }
 
-/* 1. The Main Board Container */
+
 .status-board {
   display: flex;
-  gap: 30px;              /* Generous space between columns */
-  justify-content: stretch; /* Forces children to consider the full width */
-  width: 100%;            /* Fills the entire right-side area */
+  gap: 30px;              
+  justify-content: stretch; 
+  width: 100%;            
   margin-top: 20px;
 }
 
-/* 2. The Columns (To Do, In Progress, Done) */
+
 .status-column {
-  flex: 1;                /* MAGIC LINE: Forces all 3 columns to be exactly equal width */
-  background: #f1f3f1;    /* Very light sage-gray lane */
+  flex: 1;                
+  background: #f1f3f1;    
   border-radius: 20px;
   padding: 24px;
-  min-height: 600px;      /* Professional tall columns */
+  min-height: 600px;      
   border: 1px solid rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
 }
 
-/* 3. Column Headers */
+
 .status-column h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #4a634d;         /* Deep sage for a neat, readable look */
+  color: #4a634d;         
   margin-bottom: 25px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -959,12 +959,12 @@ input[type="checkbox"] {
   padding-bottom: 12px;
 }
 
-/* 4. The Individual Task Tiles */
+
 .task-card {
   background: #ffffff;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft, neat shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
   margin-bottom: 16px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
@@ -977,7 +977,7 @@ input[type="checkbox"] {
   border-color: var(--accent);
 }
 
-/* Style for the "go do work" link */
+
 .task-card a {
   text-decoration: none;
   color: #5a855f;
@@ -997,7 +997,7 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-/* 6. Sidebar Widgets */
+
 .tasks-sidebar {
   position: sticky;
   top: 40px;
@@ -1014,7 +1014,7 @@ input[type="checkbox"] {
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* 7. Forms & Buttons */
+
 .task-input {
   width: 100%;
   padding: 12px 16px;
@@ -1039,16 +1039,13 @@ input[type="checkbox"] {
   background-color: var(--accent-dark);
 }
 
-/* ============================================================
-   NEW TASK - INTEGRATED MINIMALIST STYLE
-   ============================================================ */
 
-/* 1. Main Page Layout - No card, just a clean centered column */
+
 .todo-page {
   max-width: 650px;
   margin: 60px auto;
   padding: 0 40px;
-  text-align: left; /* Align title to the left to match the form */
+  text-align: left; 
 }
 
 .todo-page h2 {
@@ -1059,23 +1056,23 @@ input[type="checkbox"] {
   letter-spacing: -1px;
 }
 
-/* 2. The Form - Using whitespace instead of borders to separate sections */
+
 .task-form {
   display: flex;
   flex-direction: column;
-  gap: 30px; /* Large gaps for a "breathable" feel */
+  gap: 30px; 
 }
 
-/* 3. Inputs - Sophisticated and wide */
+
 .task-input, 
 .task-date, 
 .task-notes, 
 .filter-select {
   width: 100%;
-  padding: 18px 0; /* Vertical padding only */
+  padding: 18px 0; 
   background: transparent;
   border: none;
-  border-bottom: 2px solid #eee; /* Underline style instead of a box */
+  border-bottom: 2px solid #eee; 
   border-radius: 0;
   font-size: 1.1rem;
   font-family: inherit;
@@ -1087,7 +1084,7 @@ input[type="checkbox"] {
 .task-notes:focus,
 .filter-select:focus {
   outline: none;
-  border-bottom-color: var(--accent); /* Glows sage green on focus */
+  border-bottom-color: var(--accent); 
 }
 
 .task-input::placeholder {
@@ -1099,7 +1096,7 @@ input[type="checkbox"] {
   resize: none;
 }
 
-/* 4. Labels - Small, bold, and modern */
+
 .task-form label {
   display: flex;
   flex-direction: column;
@@ -1111,14 +1108,14 @@ input[type="checkbox"] {
   color: #666;
 }
 
-/* 5. Custom File Upload Look */
+
 input[type="file"] {
   font-size: 0.9rem;
   color: #888;
   padding: 10px 0;
 }
 
-/* 6. Action Buttons - Thick, centered, and black font */
+
 .task-form-actions {
   display: flex;
   gap: 20px;
@@ -1127,17 +1124,17 @@ input[type="file"] {
 
 .task-form-actions .btn-primary,
 .task-form-actions .btn-secondary {
-  flex: 1; /* Both buttons take equal width */
+  flex: 1; 
   height: 60px;
   border-radius: 14px;
   font-weight: 700;
   font-size: 1rem;
-  border: none !important; /* Removes that ugly black outline */
+  border: none !important; 
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: black !important; /* Guaranteed black font */
+  color: black !important; 
   transition: transform 0.2s, background 0.2s;
 }
 
@@ -1146,7 +1143,7 @@ input[type="file"] {
 }
 
 .task-form-actions .btn-secondary {
-  background: #f4f4f4; /* Soft grey matching your "Templates" button */
+  background: #f4f4f4; 
 }
 
 .task-form-actions .btn-primary:hover {
@@ -1154,7 +1151,7 @@ input[type="file"] {
   transform: translateY(-2px);
 }
 
-/* 1. The Main Grid Setup */
+
 div[style*="maxWidth: 800px"] {
   display: grid !important;
   grid-template-columns: 1fr 340px !important; 
@@ -1168,7 +1165,7 @@ div[style*="maxWidth: 800px"] {
   align-items: start;
 }
 
-/* 2. The Sidebar Styling with "Pop" */
+
 div[style*="maxWidth: 800px"]::after {
   grid-area: sidebar;
   content: "📊 QUICK STATS \a Total Users: 12 \a Admins: 2 \a Pending: 3 \a\a 🛡️ ROLE DEFINITIONS \a • Admin: Full control over settings. \a • Team: Task creation & editing. \a\a 🔔 RECENT ACTIVITY \a • Lauren promoted to Admin \a • Joe added 4 new tasks";
@@ -1177,26 +1174,25 @@ div[style*="maxWidth: 800px"]::after {
   border-radius: 24px;
   background: #ffffff;
   
-  /* This creates a subtle green 'glow' at the top to make stats pop */
+  
   background: linear-gradient(to bottom, #f4f7f4 0%, #ffffff 150px);
   
   border: 1px solid rgba(145, 179, 142, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   
-  /* Typography */
+
   font-size: 0.9rem;
   line-height: 2;
   color: #333;
   font-family: 'Inter', sans-serif;
 }
 
-/* 3. Strengthening the "Headers" in the sidebar */
-/* We simulate bold headers by adding a text shadow to the emoji lines */
+
 div[style*="maxWidth: 800px"]::after {
-  text-shadow: 0 0 0px #000; /* Makes all text slightly sharper */
+  text-shadow: 0 0 0px #000; 
 }
 
-/* 4. Left Column Visual Cleanup */
+
 div[style*="display: flex"][style*="flexDirection: column"] {
   background: white;
   padding: 30px;
@@ -1220,13 +1216,13 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
   font-family: 'Inter', sans-serif;
 }
 
-/* Container to center everything in the header */
+
 .hero-section {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 60px 0;
-  background: #fff; /* Ensures a clean white background */
+  background: #fff; 
 }
 
 .hero-content {
@@ -1248,27 +1244,26 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
   margin-bottom: 40px;
 }
 
-/* THE BUTTON FIX */
+
 .hero-btn {
-  background-color: #91b38e; /* Your sage green */
-  color: white;              /* White text for contrast */
-  padding: 16px 36px;       /* Large, clickable area */
+  background-color: #91b38e; 
+  color: white;              
+  padding: 16px 36px;       
   font-size: 1.1rem;
   font-weight: 700;
-  border: none;             /* Removes that thin black border */
-  border-radius: 12px;      /* Smooth rounded corners */
+  border: none;            
+  border-radius: 12px;      
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(145, 179, 142, 0.39); /* Soft green shadow */
+  box-shadow: 0 4px 14px rgba(145, 179, 142, 0.39); 
   transition: all 0.2s ease;
 }
 
 .hero-btn:hover {
-  background-color: #7a9e77; /* Darker green on hover */
-  transform: translateY(-2px); /* Slight lift effect */
+  background-color: #7a9e77; 
+  transform: translateY(-2px); 
   box-shadow: 0 6px 20px rgba(145, 179, 142, 0.23);
 }
 
-/* Stats Bar Fixes the "Empty" feeling at the top */
 .stats-bar {
   display: flex;
   justify-content: center;
@@ -1286,10 +1281,10 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
   gap: 40px;
 }
 
-/* The Two-Column Row */
+
 .row {
   display: grid;
-  grid-template-columns: 300px 1fr; /* Icon/Title on left, List on right */
+  grid-template-columns: 300px 1fr; 
   gap: 40px;
   background: white;
   padding: 50px;
@@ -1342,7 +1337,7 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
 
 .calendar-page-container {
   display: grid;
-  grid-template-columns: 1fr 350px; /* Calendar on left, Sidebar on right */
+  grid-template-columns: 1fr 350px; 
   gap: 30px;
   max-width: 1200px;
   margin: 40px auto;
@@ -1357,7 +1352,7 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
 }
 
 .calendar-sidebar {
-  background: #f9fbf9; /* Light sage tint */
+  background: #f9fbf9; 
   padding: 25px;
   border-radius: 20px;
   border: 1px solid #e0e0e0;
