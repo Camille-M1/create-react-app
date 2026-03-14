@@ -42,11 +42,10 @@ export default function CalendarPage({ tasks = [] }) {
           )}
         </div>
 
-        {/* Quick Analytics Summary */}
+        {}
         <div className="calendar-stats">
           <h4>Daily Progress</h4>
           <p>
-            
           </p>
           <div className="progress-ring">
              {/* This fulfills the requirement to view task completion rates */}

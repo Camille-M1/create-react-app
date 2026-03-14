@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
+import { auth, db } from './firebase'; 
+import { collection, addDoc, onSnapshot, query, where, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+
 import ProfilePage from './pages/ProfilePage';
 import RolesPage from './RolesPage';
 import Todo from './pages/Todo';
@@ -11,99 +15,72 @@ import ManageTodo from './pages/ManageTodo';
 import GetStarted from './pages/GetStarted';
 import TaskDetail from './pages/TaskDetail';
 import CalendarPage from './pages/CalendarPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import LandingPage from './pages/LandingPage'; 
 import './App.css';
-
-const API_URL = "http://localhost:5050/api/tasks";
-
-function parseLocalDate(dateStr) {
-  if (!dateStr) return null;
-  const [year, month, day] = String(dateStr).split('-').map(Number);
-  if (!year || !month || !day) return null;
-  return new Date(year, month - 1, day);
-}
-
-function startOfDay(date = new Date()) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getDaysUntil(dateStr) {
-  const dueDate = parseLocalDate(dateStr);
-  if (!dueDate) return null;
-  const due = startOfDay(dueDate);
-  const today = startOfDay(new Date());
-  const diffMs = due.getTime() - today.getTime();
-  return Math.round(diffMs / (1000 * 60 * 60 * 24));
-}
 
 function App() {
   const [tasks, setTasks] = useState([]);
-
-  // FETCH TASKS
-  const fetchTasks = useCallback(async () => {
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setTasks(data);
-    } catch (err) {
-      console.error("Failed to fetch tasks:", err);
-    }
-  }, []);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // FETCH TASKS
+  useEffect(() => {
+    if (user) {
+      const q = query(collection(db, "tasks"), where("userId", "==", user.uid));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTasks(data);
+      });
+      return () => unsubscribe();
+    } else {
+      setTasks([]);
+    }
+  }, [user]);
 
   // CREATE TASK
-  const handleTaskCreated = useCallback(async (newTask) => {
+  const handleTaskCreated = async (newTask) => {
+    if (!user) return;
     try {
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTask),
+      await addDoc(collection(db, "tasks"), {
+        ...newTask,
+        userId: user.uid,
+        status: newTask.status || "To Do",
+        createdAt: serverTimestamp()
       });
-      fetchTasks();
     } catch (err) {
       console.error("Failed to create task:", err);
     }
-  }, [fetchTasks]);
+  };
 
   // UPDATE STATUS
-  const handleStatusChange = useCallback(async (id, status) => {
+  const handleStatusChange = async (id, status) => {
     try {
-      await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      fetchTasks();
+      const taskRef = doc(db, "tasks", id);
+      await updateDoc(taskRef, { status });
     } catch (err) {
       console.error("Failed to update task:", err);
     }
-  }, [fetchTasks]);
+  };
 
   // DELETE TASK
-  const handleDeleteTask = useCallback(async (id) => {
+  const handleDeleteTask = async (id) => {
     try {
-      await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-      fetchTasks();
+      await deleteDoc(doc(db, "tasks", id));
     } catch (err) {
       console.error("Failed to delete task:", err);
     }
-  }, [fetchTasks]);
+  };
 
-  const activeTasks = tasks.filter(task => task.status !== 'done');
-  const completedTasks = tasks.filter(task => task.status === 'done');
-
-  const progressPercent = tasks.length > 0
-    ? Math.round((completedTasks.length / tasks.length) * 100)
-    : 0;
-
-  const dueSoonCount = activeTasks.filter(task => {
-    const daysLeft = getDaysUntil(task.dueDate);
-    return daysLeft !== null && daysLeft >= 0 && daysLeft <= 7;
-  }).length;
+  if (loading) return null;
 
   return (
     <div className="App">
@@ -113,56 +90,100 @@ function App() {
         <div className="nav-brand">
           Task<span>Pilot</span>
         </div>
+
         <div className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/calendar" className="nav-link">Calendar</Link>
-          <Link to="/tasks" className="nav-link">Tasks</Link>
-          <Link to="/todos" className="nav-link">To-Do</Link>
-          <Link to="/login" className="nav-link">Login</Link>
-          <Link to="/roles" className="nav-link">Roles</Link>
-          <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
+          {user ? (
+            <>
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/calendar" className="nav-link">Calendar</Link>
+              <Link to="/tasks" className="nav-link">Tasks</Link>
+              <Link to="/todos" className="nav-link">To-Do</Link>
+              <Link to="/roles" className="nav-link">Roles</Link>
+              <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/get-started" className="btn btn-primary nav-btn">Get Started</Link>
+            </>
+          )}
         </div>
+
         <div className="nav-profile">
-          <Link to="/profile" className="profile-link">
-            <span role="img" aria-label="Profile">👤</span> Profile
-          </Link>
+          {user && (
+            <Link to="/profile" className="profile-link">
+              <span role="img" aria-label="Profile">👤</span> Profile
+            </Link>
+          )}
         </div>
       </nav>
 
       {/* ROUTES */}
       <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/roles" element={<RolesPage />} />
-        <Route path="/todos" element={<Todo tasks={tasks} />} />
-        <Route path="/calendar" element={<CalendarPage tasks={tasks} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/get-started" element={<GetStarted />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/roles" element={<RolesPage />} />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute user={user}>
+              <ProfilePage tasks={tasks} />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/tasks"
           element={
-            <TasksPage
-              tasks={tasks}
-              onStatusChange={handleStatusChange}
-              onDeleteTask={handleDeleteTask}
-              onTaskCreated={handleTaskCreated}
-            />
+            <ProtectedRoute user={user}>
+              <TasksPage
+                tasks={tasks}
+                onStatusChange={handleStatusChange}
+                onDeleteTask={handleDeleteTask}
+                onTaskCreated={handleTaskCreated}
+              />
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/tasks/new"
-          element={<NewTask onTaskCreated={handleTaskCreated} />}
+          element={
+            <ProtectedRoute user={user}>
+              <NewTask onTaskCreated={handleTaskCreated} />
+            </ProtectedRoute>
+          }
         />
 
-        {/* ✅ IMPORTANT — Task Detail Route */}
         <Route
           path="/tasks/:id"
-          element={<TaskDetail />}
+          element={
+            <ProtectedRoute user={user}>
+              <TaskDetail />
+            </ProtectedRoute>
+          }
         />
 
-        <Route path="/get-started" element={<GetStarted />} />
-        <Route path="/" element={<GetStarted />} />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute user={user}>
+              <CalendarPage tasks={tasks} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/todos"
+          element={
+            <ProtectedRoute user={user}>
+              <Todo tasks={tasks} />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       {/* FOOTER */}
