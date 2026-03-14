@@ -3,7 +3,7 @@ import { auth } from "../firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 
-function Login() {
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -14,6 +14,10 @@ function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+
       setMessage(`Login successful! Welcome, ${user.email}`);
       console.log("Logged in user:", user);
       // Send user info to backend
@@ -27,6 +31,8 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+
+      if (onLoginSuccess) onLoginSuccess();
       navigate("/tasks");
     } catch (error) {
       setMessage("Login failed. Check your credentials.");
@@ -38,6 +44,10 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+
       setMessage(`Google login successful! Welcome, ${user.displayName}`);
       console.log("Google user:", user);
       // Send user info to backend
@@ -51,6 +61,8 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+
+      if (onLoginSuccess) onLoginSuccess();
       navigate("/tasks");
     } catch (error) {
       setMessage("Google login failed.");
@@ -104,4 +116,3 @@ function Login() {
 }
 
 export default Login;
-

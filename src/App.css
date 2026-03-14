@@ -726,7 +726,7 @@ footer {
   }
 }
 
-/* Priority Badge Styling */
+
 .task-priority-container {
   display: inline-flex;
   gap: 8px;
@@ -835,7 +835,7 @@ input[type="checkbox"] {
   font-weight: 800;
   color: var(--accent-dark);
 }
-/* Create the two-column dashboard */
+
 .dashboard-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -852,7 +852,7 @@ input[type="checkbox"] {
   gap: 20px;
 }
 
-/* Progress Ring Styles */
+
 .progress-card {
   background: white;
   padding: 24px;
@@ -1201,7 +1201,7 @@ div[style*="display: flex"][style*="flexDirection: column"] {
   border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Target the "Add User" form bar to make it match the sidebar gradient */
+
 div[style*="display: flex"][style*="marginBottom: 24px"] {
   background: #f4f7f4 !important;
   padding: 25px !important;
@@ -1210,7 +1210,7 @@ div[style*="display: flex"][style*="marginBottom: 24px"] {
 }
 
 .get-started-container {
-  max-width: 1200px; /* Wider container to fill the screen */
+  max-width: 1200px; 
   margin: 0 auto;
   padding: 60px 40px;
   font-family: 'Inter', sans-serif;

@@ -96,8 +96,10 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
       description: newTaskNotes.trim(),
       dueDate: newTaskDueDate || null,
       priority: newTaskPriority,
-      status: 'todo',
+      status: 'To Do',
     };
+
+    
 
     if (onTaskCreated) {
       onTaskCreated(newTask);
