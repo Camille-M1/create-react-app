@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { auth, db } from './firebase'; 
 import { collection, addDoc, onSnapshot, query, where, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore';
@@ -11,7 +11,7 @@ import Login from './pages/Login';
 import Signup from './pages/signup';
 import TasksPage from './pages/TasksPage';
 import NewTask from './pages/NewTask';
-import ManageTodo from './pages/ManageTodo';
+/*import ManageTodo from './pages/ManageTodo';*/
 import GetStarted from './pages/GetStarted';
 import TaskDetail from './pages/TaskDetail';
 import CalendarPage from './pages/CalendarPage';
