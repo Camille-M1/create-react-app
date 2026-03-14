@@ -13,8 +13,8 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
   const [newTaskNotes, setNewTaskNotes] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('medium');
-  const [newTaskTemplateAttachments, setNewTaskTemplateAttachments] = useState([]);
-  const [newTaskAttachmentFiles, setNewTaskAttachmentFiles] = useState([]);
+  const [setNewTaskTemplateAttachments] = useState([]);
+  const [setNewTaskAttachmentFiles] = useState([]);
 
   const [templateTitle, setTemplateTitle] = useState('');
   const [templateNotes, setTemplateNotes] = useState('');
