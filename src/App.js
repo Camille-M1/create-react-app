@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import { auth, db } from './firebase'; 
 import { collection, addDoc, onSnapshot, query, where, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import ManageTodo from './pages/ManageTodo';
 
 import ProfilePage from './pages/ProfilePage';
 import RolesPage from './RolesPage';
