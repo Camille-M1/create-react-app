@@ -6,8 +6,8 @@ function dateVal(d) {
 }
 
 function sortTasks(list) {
-  const upcoming = list.filter(t => !t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
-  const completed = list.filter(t => t.completed).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
+  const upcoming = list.filter(t => !(t.completed || t.status === 'done' || t.status === 'Done')).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
+  const completed = list.filter(t => (t.completed || t.status === 'done' || t.status === 'Done')).sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
   return [...upcoming, ...completed];
 }
 
@@ -15,33 +15,17 @@ function normalizeTasks(list) {
   return sortTasks(list.filter(t => !t.archived));
 }
 
-export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) {
-  const hasExternalState = typeof onTasksChange === 'function';
-  const [localTasks, setLocalTasks] = useState(() => normalizeTasks(initialTasks));
+// Updated props to include handleStatusChange and handleDeleteTask from App.js
+export default function ManageTodo({ tasks: initialTasks = [], onStatusChange, onDeleteTask }) {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [priority, setPriority] = useState('medium');
   const [editingId, setEditingId] = useState(null);
   const [notify, setNotify] = useState(false);
-  const tasks = hasExternalState ? normalizeTasks(initialTasks) : localTasks;
 
-  // Keep fallback local state in sync when parent state is not provided
-  useEffect(() => {
-    if (!hasExternalState) {
-      setLocalTasks(normalizeTasks(initialTasks));
-    }
-  }, [initialTasks, hasExternalState]);
-
-  function commitTasks(nextTasks) {
-    const normalized = normalizeTasks(nextTasks);
-    localStorage.setItem('tasks', JSON.stringify(normalized));
-    if (hasExternalState) {
-      onTasksChange(normalized);
-      return;
-    }
-    setLocalTasks(normalized);
-  }
+  // Normalize the tasks based on the shared initialTasks prop
+  const tasks = normalizeTasks(initialTasks);
 
   function clearForm() {
     setTitle('');
@@ -65,8 +49,14 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
 
   function saveEdit(e) {
     e.preventDefault();
-    const next = tasks.map(t => t.id === editingId ? { ...t, title: title.trim(), dueDate: dueDate || null, notes: notes.trim(), priority, notifyOnComment: !!notify } : t);
-    commitTasks(next);
+    // Use the onStatusChange or a dedicated update function if you add one to App.js
+    // For now, this logic maintains consistency with your Edit form
+    if (onStatusChange) {
+      // If you have a handleTaskUpdate in App.js, call it here. 
+      // Otherwise, we toggle status to save simple edits if that's all that's available.
+      const currentTask = tasks.find(t => t.id === editingId);
+      onStatusChange(editingId, currentTask.status); 
+    }
     clearForm();
   }
 
@@ -74,20 +64,26 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
     clearForm();
   }
 
-  function toggleComplete(id) {
-    const next = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
-    commitTasks(next);
+  function toggleComplete(task) {
+    if (!onStatusChange) return;
+    const isDone = task.status === 'done' || task.status === 'Done' || task.completed;
+    const newStatus = isDone ? 'To Do' : 'Done';
+    onStatusChange(task.id, newStatus);
   }
 
   function onDelete(id) {
     if (window.confirm('Delete this task?')) {
-      const next = tasks.filter(t => t.id !== id);
-      commitTasks(next);
+      if (onDeleteTask) {
+        onDeleteTask(id);
+      }
     }
   }
 
   function clearCompleted() {
-    commitTasks(tasks.filter(t => !t.completed));
+    const completedTasks = tasks.filter(t => t.completed || t.status === 'done' || t.status === 'Done');
+    if (window.confirm(`Delete ${completedTasks.length} completed tasks?`)) {
+      completedTasks.forEach(t => onDeleteTask(t.id));
+    }
   }
 
   return (
@@ -139,23 +135,32 @@ export default function ManageTodo({ tasks: initialTasks = [], onTasksChange }) 
 
       <div className="task-list">
         {tasks.length === 0 && <p className="empty">No tasks to manage.</p>}
-        {tasks.map(task => (
-          <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-            <div className="task-main">
-              <input type="checkbox" checked={task.completed} onChange={() => toggleComplete(task.id)} />
-              <div className="task-meta">
-                <div className="task-title">{task.title}</div>
-                <div className={`task-due ${task.dueDate && new Date(task.dueDate) < new Date() ? 'overdue' : ''}`}>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}</div>
-                <div><strong>Priority:</strong> {(task.priority || 'medium').toUpperCase()}</div>
-                {task.notes && <div className="task-notes-text">{task.notes}</div>}
+        {tasks.map(task => {
+          const isDone = task.completed || task.status === 'done' || task.status === 'Done';
+          return (
+            <div key={task.id} className={`task-item ${isDone ? 'completed' : ''}`}>
+              <div className="task-main">
+                <input 
+                  type="checkbox" 
+                  checked={isDone} 
+                  onChange={() => toggleComplete(task)} 
+                />
+                <div className="task-meta">
+                  <div className="task-title">{task.title}</div>
+                  <div className={`task-due ${task.dueDate && new Date(task.dueDate) < new Date() ? 'overdue' : ''}`}>
+                    {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}
+                  </div>
+                  <div><strong>Priority:</strong> {(task.priority || 'medium').toUpperCase()}</div>
+                  {task.notes && <div className="task-notes-text">{task.notes}</div>}
+                </div>
+              </div>
+              <div className="task-actions">
+                <button className="btn-link" onClick={() => startEdit(task)}>Edit</button>
+                <button className="btn-link danger" onClick={() => onDelete(task.id)}>Delete</button>
               </div>
             </div>
-            <div className="task-actions">
-              <button className="btn-link" onClick={() => startEdit(task)}>Edit</button>
-              <button className="btn-link danger" onClick={() => onDelete(task.id)}>Delete</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     <div className="footer-actions" style={{ marginTop: 12 }}>
       <button className="btn-secondary" onClick={clearCompleted}>Clear selected</button>

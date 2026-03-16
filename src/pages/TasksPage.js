@@ -93,13 +93,13 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
 
     const newTask = {
       title: newTaskTitle.trim(),
-      description: newTaskNotes.trim(),
+      // Standardized to 'notes' to ensure visibility in TaskItem/TaskList
+      notes: newTaskNotes.trim(), 
       dueDate: newTaskDueDate || null,
       priority: newTaskPriority,
-      status: 'To Do',
+      // Matches the "To Do" status casing used in StatusBoard
+      status: 'To Do', 
     };
-
-    
 
     if (onTaskCreated) {
       onTaskCreated(newTask);
@@ -127,11 +127,9 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
   return (
     <div className="tasks-page">
       <div className="tasks-dashboard">
-
         <aside className="tasks-sidebar">
           <div className="template-card">
             <h2 style={{ fontSize: '1.2rem', marginBottom: '15px' }}>Quick Actions</h2>
-
             <Link
               to="/tasks/new"
               className="btn btn-primary"
@@ -139,7 +137,6 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
             >
               + Create New Task
             </Link>
-
             <button
               className="btn btn-secondary"
               style={{ width: '100%' }}
@@ -152,28 +149,24 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
           {showTemplates && (
             <div className="template-section">
               <h3>Save Task Template</h3>
-
               <input
                 className="task-input"
                 placeholder="Template title"
                 value={templateTitle}
                 onChange={e => setTemplateTitle(e.target.value)}
               />
-
               <input
                 type="date"
                 className="task-date"
                 value={templateDueDate}
                 onChange={e => setTemplateDueDate(e.target.value)}
               />
-
               <textarea
                 className="task-notes"
                 placeholder="Template notes (optional)"
                 value={templateNotes}
                 onChange={e => setTemplateNotes(e.target.value)}
               />
-
               <select
                 className="filter-select"
                 value={templatePriority}
@@ -183,7 +176,6 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
-
               <button
                 className="btn btn-primary"
                 style={{ width: '100%' }}
@@ -191,16 +183,13 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
               >
                 Save as Template
               </button>
-
               <h4 style={{ marginTop: '24px' }}>Templates</h4>
-
               <input
                 className="task-input"
                 placeholder="🔍 Search templates..."
                 value={templateSearch}
                 onChange={(e) => setTemplateSearch(e.target.value)}
               />
-
               <ul style={{ listStyle: 'none', padding: 0, marginTop: '10px' }}>
                 {filteredTemplates.map((tpl, idx) => (
                   <li key={idx} style={{ marginBottom: '10px' }}>
@@ -218,7 +207,6 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
 
         <main className="tasks-page-content">
           <h2>Project Board</h2>
-
           <StatusBoard
             tasks={tasks}
             onStatusChange={onStatusChange}
@@ -230,6 +218,8 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
             <TaskList
               tasks={tasks}
               onDeleteTask={onDeleteTask}
+              // This ensures TaskItem receives the function needed to move/delete
+              onStatusChange={onStatusChange} 
             />
           </div>
         </main>
@@ -239,21 +229,18 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
         <div className="modal-bg">
           <div className="modal">
             <h3>Create Task from Template</h3>
-
             <input
               className="task-input"
               placeholder="Task title"
               value={newTaskTitle}
               onChange={e => setNewTaskTitle(e.target.value)}
             />
-
             <textarea
               className="task-notes"
               placeholder="Notes"
               value={newTaskNotes}
               onChange={e => setNewTaskNotes(e.target.value)}
             />
-
             <div style={{ display: 'flex', gap: 12 }}>
               <button
                 className="btn btn-primary"
@@ -262,7 +249,6 @@ const TasksPage = ({ tasks = [], onStatusChange, onDeleteTask, onTaskCreated }) 
               >
                 Create Task
               </button>
-
               <button
                 className="btn btn-secondary"
                 style={{ flex: 1 }}

@@ -180,7 +180,24 @@ function App() {
           path="/todos"
           element={
             <ProtectedRoute user={user}>
-              <Todo tasks={tasks} />
+              <Todo 
+                tasks={tasks} 
+                onStatusChange={handleStatusChange} 
+                onDeleteTask={handleDeleteTask} 
+              />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/todos/manage"
+          element={
+            <ProtectedRoute user={user}>
+              <ManageTodo 
+                tasks={tasks} 
+                onStatusChange={handleStatusChange} 
+                onDeleteTask={handleDeleteTask} 
+              />
             </ProtectedRoute>
           }
         />

@@ -48,7 +48,7 @@ function isOverdue(d) {
   return nd < t;
 }
 
-export default function Todo({ tasks: initialTasks = [] }) {
+export default function Todo({ tasks: initialTasks = [], onStatusChange, onDeleteTask }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
@@ -64,13 +64,13 @@ export default function Todo({ tasks: initialTasks = [] }) {
   const sorted = [...tasks].sort((a, b) => dateVal(a.dueDate) - dateVal(b.dueDate));
 
     const filtered = sorted.filter(t => {
-      const isCompleted = t.completed || t.status === 'done';
+      const isCompleted = t.completed || t.status === 'done' || t.status === 'Done';
 
       // Completed filter: show only completed tasks
       if (filter === 'completed') return isCompleted;
 
       // Hide done tasks by default in the To‑Do list
-      if (t.status === 'done') return false;
+      if (t.status === 'done' || t.status === 'Done') return false;
 
       // Hide completed tasks unless 'Show completed' is checked
       if (!showCompleted && isCompleted) return false;
@@ -128,7 +128,7 @@ export default function Todo({ tasks: initialTasks = [] }) {
 
   // First, calculate the percentage at the top of your function (before the return)
   const total = tasks.length;
-  const completedCount = tasks.filter(t => t.completed || t.status === 'done').length;
+  const completedCount = tasks.filter(t => t.completed || t.status === 'done' || t.status === 'Done').length;
   const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
   const strokeDasharray = `${percentage}, 100`;
 
@@ -204,39 +204,55 @@ export default function Todo({ tasks: initialTasks = [] }) {
 
         <div className="task-list">
           {filtered.length === 0 && <p className="empty">No tasks found.</p>}
-          {filtered.map(task => (
-            <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-              <div className="task-main">
-                <div className="task-meta">
-                  <div className="task-title">
-                    <Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link>
+          {filtered.map(task => {
+            const isDone = task.status === 'done' || task.status === 'Done';
+            return (
+              <div key={task.id} className={`task-item ${isDone ? 'completed' : ''}`}>
+                <div className="task-main">
+                  <div className="task-meta">
+                    <div className="task-title">
+                      <Link to={`/todos/${task.id}`} className="nav-link">{task.title}</Link>
+                    </div>
+                    <div className={`task-due ${task.dueDate && isOverdue(task.dueDate) ? 'overdue' : ''}`}>
+                      {task.dueDate ? task.dueDate : 'No due date'}
+                    </div>
+                    <div className="task-priority-container">
+                      <strong>Priority:</strong> 
+                      <span className={`priority-tag priority-${(task.priority || 'medium').toLowerCase()}`}>
+                        {(task.priority || 'medium').toUpperCase()}
+                      </span>
+                    </div>
+                    {task.notes && <div className="task-notes-text">{task.notes}</div>}
                   </div>
-                  <div className={`task-due ${task.dueDate && task.dueDate < new Date().toISOString().slice(0,10) ? 'overdue' : ''}`}>
-                    {task.dueDate ? task.dueDate : 'No due date'}
-                  </div>
-                  <div className="task-priority-container">
-                    <strong>Priority:</strong> 
-                    <span className={`priority-tag priority-${(task.priority || 'medium').toLowerCase()}`}>
-                      {(task.priority || 'medium').toUpperCase()}
-                    </span>
-                  </div>
-                  {task.notes && <div className="task-notes-text">{task.notes}</div>}
+                </div>
+                <div className="task-actions" style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => onStatusChange(task.id, isDone ? 'To Do' : 'Done')}
+                    className="btn-link"
+                  >
+                    Mark {isDone ? 'To Do' : 'Done'}
+                  </button>
+                  <button 
+                    onClick={() => onDeleteTask(task.id)}
+                    className="btn-link"
+                    style={{ color: 'red' }}
+                  >
+                    Delete
+                  </button>
+                  {task.dueDate && (
+                    <a
+                      className="btn-link"
+                      target="_blank"
+                      rel="noreferrer"
+                      href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${formatICalDate(task.dueDate)}/${formatICalDate(new Date(new Date(task.dueDate).getFullYear(), new Date(task.dueDate).getMonth(), new Date(task.dueDate).getDate() + 1).toISOString())}&details=${encodeURIComponent(task.notes || '')}`}
+                    >
+                      Add to Google Calendar
+                    </a>
+                  )}
                 </div>
               </div>
-              <div className="task-actions">
-                {task.dueDate && (
-                  <a
-                    className="btn-link"
-                    target="_blank"
-                    rel="noreferrer"
-                    href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${formatICalDate(task.dueDate)}/${formatICalDate(new Date(new Date(task.dueDate).getFullYear(), new Date(task.dueDate).getMonth(), new Date(task.dueDate).getDate() + 1).toISOString())}&details=${encodeURIComponent(task.notes || '')}`}
-                  >
-                    Add to Google Calendar
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

@@ -3,18 +3,24 @@ import React from 'react';
 const TaskItem = ({ task, onStatusChange, onDeleteTask }) => {
 
   const toggleStatus = () => {
-    const newStatus = task.status === "done" ? "todo" : "done";
+    if (!onStatusChange) return;
+
+    const currentStatus = task.status?.toLowerCase() || "";
+    const newStatus = (currentStatus === "done") ? "todo" : "done";
+    
     onStatusChange(task.id, newStatus);
   };
 
+  const isDone = task.status?.toLowerCase() === "done";
+
   return (
     <div className="task-item">
-      <h3>{task.title}</h3>
+      <h3>{task.title || task.text || "Untitled"}</h3>
 
       <p>Status: {task.status}</p>
 
       <button onClick={toggleStatus}>
-        Mark {task.status === "done" ? "To Do" : "Done"}
+        Mark {isDone ? "To Do" : "Done"}
       </button>
 
       <button onClick={() => onDeleteTask(task.id)}>
