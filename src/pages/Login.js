@@ -3,7 +3,7 @@ import { auth } from "../firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 
-function Login() {
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -14,6 +14,10 @@ function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+
       setMessage(`Login successful! Welcome, ${user.email}`);
       console.log("Logged in user:", user);
       // Send user info to backend
@@ -27,6 +31,8 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+
+      if (onLoginSuccess) onLoginSuccess();
       navigate("/tasks");
     } catch (error) {
       setMessage("Login failed. Check your credentials.");
@@ -38,6 +44,10 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+
       setMessage(`Google login successful! Welcome, ${user.displayName}`);
       console.log("Google user:", user);
       // Send user info to backend
@@ -51,6 +61,8 @@ function Login() {
           photoURL: user.photoURL,
         }),
       });
+
+      if (onLoginSuccess) onLoginSuccess();
       navigate("/tasks");
     } catch (error) {
       setMessage("Google login failed.");
@@ -58,11 +70,11 @@ function Login() {
   };
 
   return (
-    /* 1. auth-container gives you the white card and the 80px margin */
+    /* 1. auth-container */
     <div className="auth-container">
       <h2>Log In</h2>
 
-      {/* 2. login-form applies the flex-direction: column and 16px gap */}
+      {/* login-form */}
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="email"
@@ -79,13 +91,13 @@ function Login() {
           required
         />
         
-        {/* 3. This button uses your var(--accent) color automatically */}
+        
         <button type="submit">Log In</button>
       </form>
 
       <div style={{ margin: "10px 0", color: "#888" }}>or</div>
 
-      {/* 4. btn-secondary matches your grey hover style from the CSS */}
+      
       <button 
         onClick={handleGoogleLogin} 
         className="btn btn-secondary" 
@@ -104,4 +116,3 @@ function Login() {
 }
 
 export default Login;
-

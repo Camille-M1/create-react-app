@@ -44,33 +44,24 @@ export default function NewTask({ onTaskCreated }) {
       return;
     }
 
-    // Fix date handling: ensure dueDate is local day
-    // Store dueDate exactly as entered (YYYY-MM-DD)
     const newTask = {
-      id: Date.now().toString(),
       title: title.trim(),
-      text: title.trim(),
       dueDate: dueDate || null,
       notes: notes.trim(),
       attachments,
       priority,
-      completed: false,
-      status: 'todo',
-      notifyOnComment: false,
-      comments: [],
+      status: 'To Do', 
     };
 
     if (onTaskCreated) {
       onTaskCreated(newTask);
     } else {
-      // Save to localStorage
       const raw = localStorage.getItem('tasks');
       const tasks = raw ? JSON.parse(raw) : [];
-      tasks.push(newTask);
+      tasks.push({ ...newTask, id: Date.now().toString(), createdAt: new Date().toISOString() });
       localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
-    // Navigate back to tasks page
     navigate('/tasks');
   };
 

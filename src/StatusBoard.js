@@ -1,36 +1,54 @@
 import React from 'react';
 import './StatusBoard.css';
 
-const statuses = [
-  { key: 'todo', label: 'To Do' },
-  { key: 'inprogress', label: 'In Progress' },
-  { key: 'done', label: 'Done' }
+const STATUSES = [
+  { value: 'todo', label: 'To Do' },
+  { value: 'inprogress', label: 'In Progress' },
+  { value: 'done', label: 'Done' }
 ];
 
 const StatusBoard = ({ tasks, onStatusChange }) => {
+  
+  // Helper to normalize status strings for comparison
+  const normalize = (status) => status?.toLowerCase().replace(/\s/g, '') || '';
+
   return (
     <div className="board">
-      {statuses.map(status => {
-        const filteredTasks = tasks.filter(task => task.status === status.key);
+      {STATUSES.map(status => {
+        // Filter tasks by matching normalized versions of the status
+        const filteredTasks = tasks.filter(task => 
+          normalize(task.status) === normalize(status.value) || 
+          normalize(task.status) === normalize(status.label)
+        );
+
         return (
-          <div key={status.key} className="column">
+          <div key={status.value} className="column">
             <h3>{status.label}</h3>
 
-            {filteredTasks.length === 0 && <p style={{ color: '#999', fontSize: '12px' }}>No tasks</p>}
+            {filteredTasks.length === 0 && (
+              <p style={{ color: '#999', fontSize: '12px' }}>No tasks</p>
+            )}
+
             {filteredTasks.map(task => (
               <div key={task.id} className="task-card">
-                {/* Make only the task name clickable */}
-                <a href={`/todos/${task.id}?from=tasks`} style={{ textDecoration: 'underline', color: '#0074d9' }}>
+                <a
+                  href={`/todos/${task.id}?from=tasks`}
+                  style={{ textDecoration: 'underline', color: '#0074d9', display: 'block', marginBottom: '8px' }}
+                >
                   {task.text || task.title}
                 </a>
 
-                {/* Dropdown to change status */}
                 <select
-                  value={task.status}
+                  // Simplified: Find which of our 3 STATUSES matches the current task status
+                  value={STATUSES.find(s => 
+                    normalize(s.value) === normalize(task.status) || 
+                    normalize(s.label) === normalize(task.status)
+                  )?.value || 'todo'}
+                  
                   onChange={(e) => onStatusChange(task.id, e.target.value)}
                 >
-                  {statuses.map(s => (
-                    <option key={s.key} value={s.key}>
+                  {STATUSES.map(s => (
+                    <option key={s.value} value={s.value}>
                       {s.label}
                     </option>
                   ))}

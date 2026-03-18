@@ -1,103 +1,139 @@
-/* Main Container - Increased width for a "Fuller" look */
+
 .profile-page {
-  max-width: 650px; 
-  margin: 60px auto;
-  padding: 3rem;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100vw; 
+  min-height: 100vh; 
+  background: #ffffff;
+  margin: 0;
+  padding: 0;
   font-family: 'Inter', sans-serif;
-  border: 1px solid #f0f0f0;
+  overflow: hidden;
 }
 
-.profile-page h2 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  color: #2d3436;
-  border-bottom: 2px solid #91b38e; /* Sage green accent */
-  padding-bottom: 10px;
-  display: inline-block;
+
+.profile-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: #2d3436; 
+  color: white;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-/* User Info Section */
-.profile-details {
-  margin-top: 1.5rem;
-  text-align: left;
+.large-logo {
+  width: 70px;
+  margin-bottom: 30px;
+  align-self: center;
+  filter: brightness(0) invert(1); 
 }
 
-.profile-details p {
-  margin: 0.8rem 0;
-  font-size: 1.05rem;
-  color: #636e72;
-}
-
-.profile-details strong {
-  color: #2d3436;
-  margin-right: 5px;
-}
-
-/* Form & Input Styling */
-form {
+.profile-internal-nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
-label {
-  font-weight: 600;
-  color: #2d3436;
-  display: flex;
-  flex-direction: column;
+.profile-internal-nav a, .nav-link {
+  color: #dfe6e9;
+  text-decoration: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  transition: 0.2s;
+  font-weight: 500;
 }
 
-input {
-  margin-top: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-input:focus {
-  outline: none;
-  border-color: #91b38e;
-  box-shadow: 0 0 0 3px rgba(145, 179, 142, 0.1);
-}
-
-/* Buttons */
-button {
-  background-color: #91b38e;
+.profile-internal-nav a.active {
+  background: #91b38e; 
   color: white;
-  border: none;
-  padding: 12px 20px;
+}
+
+
+.profile-main-content {
+  flex: 1;
+  padding: 60px;
+  background-color: #fcfcfc;
+  overflow-y: auto; 
+}
+
+.profile-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+
+.profile-stats-dashboard, .settings-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.stat-card, .setting-box {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #f1f2f6;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+
+.dashboard-feature-section {
+  width: 100%;
+  margin-bottom: 60px;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px; 
+}
+
+.task-table th {
+  text-align: left;
+  padding: 0 15px 10px;
+  color: #b2bec3;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.task-table td {
+  background: white;
+  padding: 22px 15px;
+  border-top: 1px solid #f1f2f6;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.task-table td:first-child { border-left: 1px solid #f1f2f6; border-radius: 12px 0 0 12px; }
+.task-table td:last-child { border-right: 1px solid #f1f2f6; border-radius: 0 12px 12px 0; }
+
+
+.badge {
+  padding: 6px 14px;
   border-radius: 8px;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.badge.progress { background: #fff4e6; color: #fd7e14; }
+.badge.done { background: #e3f9e5; color: #2d6a4f; }
+.badge.urgent { background: #fff5f5; color: #fa5252; }
+
+.btn-logout-sidebar {
+  margin-top: auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: 0.3s;
 }
 
-button:hover {
-  background-color: #7a9e77;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* Sign Out Button - Different color for clarity */
-button[onClick*="handleSignOut"] {
-  background-color: #ff7675;
-  float: none !important; /* Removes the float for better centering */
-  display: block;
-  margin: 0 0 20px auto;
-}
-
-button[onClick*="handleSignOut"]:hover {
-  background-color: #e84393;
-}
+.btn-logout-sidebar:hover { background: #ff7675; }

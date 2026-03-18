@@ -2,7 +2,8 @@ import React, { useState } from "react";
 
 const AddTask = ({ onTaskCreated }) => {
   const [title, setTitle] = useState("");
-  const [status, setStatus] = useState("todo");
+  /* Updated default to match board header casing */
+  const [status, setStatus] = useState("To Do"); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -10,11 +11,11 @@ const AddTask = ({ onTaskCreated }) => {
 
     onTaskCreated({
       title,
-      status,
+      status, // This now sends "To Do", "In Progress", or "Done"
     });
 
     setTitle("");
-    setStatus("todo");
+    setStatus("To Do");
   };
 
   return (
@@ -30,7 +31,7 @@ const AddTask = ({ onTaskCreated }) => {
         <input
           className="task-input"
           type="text"
-          placeholder="New task"
+          placeholder="What needs to be done?"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -41,17 +42,18 @@ const AddTask = ({ onTaskCreated }) => {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option value="todo">To Do</option>
-          <option value="inprogress">In Progress</option>
-          <option value="done">Done</option>
+          
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Done">Done</option>
         </select>
 
         <button
           type="submit"
           className="btn btn-primary"
-          style={{ width: "100%" }}
+          style={{ width: "100%", backgroundColor: "#91b38e", border: "none" }}
         >
-          Add Task
+          + Add Task
         </button>
       </form>
     </div>
